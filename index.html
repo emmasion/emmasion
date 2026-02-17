@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emma Commission - Custom Digital Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(236, 72, 153, 0.15);
+            box-shadow: 0 2px 20px rgba(236, 72, 153, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 0.6rem 0;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 4px 30px rgba(236, 72, 153, 0.12);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: #ec4899;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.35);
+            transition: all 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.25rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ec4899, #f472b6);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ec4899;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            color: white !important;
+            padding: 0.55rem 1.25rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.45);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: #ec4899;
+            padding: 0.3rem;
+            z-index: 1001;
+        }
+
+        /* Mobile Menu - Full Screen */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            padding: 5rem 1.5rem 2rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .mobile-menu.active {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 1rem 1.25rem;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+
+        .mobile-menu a:hover {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            color: #ec4899;
+        }
+
+        .mobile-menu .btn-primary {
+            width: 100%;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #ec4899;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 65px;
+            padding: 3rem 1rem 2rem;
+            text-align: center;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            color: #ec4899;
+            padding: 0.4rem 0.875rem;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+            border: 2px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .badge::before {
+            content: "●";
+            font-size: 0.45rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.875rem;
+            color: #1a1a1a;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.875rem;
+            color: #64748b;
+            max-width: 650px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.6;
+        }
+
+        .btn-large {
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            color: white;
+            padding: 0.875rem 1.75rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.3s;
+            font-size: 0.875rem;
+            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.35);
+        }
+
+        .btn-large:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(236, 72, 153, 0.45);
+        }
+
+        /* Sample Section */
+        .sample {
+            padding: 3rem 1rem;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 0.5rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            font-size: 0.85rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Google Drive Button */
+        .drive-button-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding: 0 0.5rem;
+        }
+
+        .btn-drive {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-drive:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.4);
+        }
+
+        /* Sample Grid */
+        .sample-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .sample-item {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border: 2px solid rgba(236, 72, 153, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .sample-placeholder {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.6;
+        }
+
+        .sample-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .sample-category {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        /* Instagram Section - UPDATED */
+        .instagram-section {
+            padding: 4rem 1rem;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .instagram-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .instagram-section::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .instagram-card {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 2rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(236, 72, 153, 0.2);
+            position: relative;
+            z-index: 1;
+            border: 2px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .instagram-icon-large {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 25px rgba(220, 39, 67, 0.3);
+            overflow: hidden;
+        }
+
+        .instagram-icon-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .instagram-handle {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .instagram-followers {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .instagram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(220, 39, 67, 0.3);
+        }
+
+        .instagram-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(220, 39, 67, 0.4);
+        }
+
+        .instagram-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ec4899;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .contact-form-container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem 1.25rem;
+            border-radius: 1.75rem;
+            box-shadow: 0 20px 60px rgba(236, 72, 153, 0.15);
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-header h2 {
+            margin-bottom: 0.4rem;
+            font-size: 1.5rem;
+        }
+
+        .contact-header p {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: #1a1a1a;
+            font-size: 0.85rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.875rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            background: #fafafa;
+            font-weight: 500;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #ec4899;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.1);
+        }
+
+        textarea {
+            border-radius: 1.25rem;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-whatsapp {
+            width: 100%;
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(236, 72, 153, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        /* Tablet */
+        @media (min-width: 640px) {
+            .hero {
+                margin-top: 75px;
+                padding: 3.5rem 1.5rem 2.5rem;
+            }
+
+            .hero::before {
+                width: 350px;
+                height: 350px;
+            }
+
+            h1 {
+                font-size: 2.25rem;
+            }
+
+            .subtitle {
+                font-size: 0.95rem;
+            }
+
+            .sample, .instagram-section, .contact {
+                padding: 3.5rem 1.25rem;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+
+            .sample-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
+            }
+
+            .contact-form-container {
+                padding: 2.5rem 1.75rem;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 768px) {
+            .nav-container {
+                padding: 0 2rem;
+            }
+
+            .nav-links {
+                gap: 1.75rem;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+            }
+
+            .btn-primary {
+                padding: 0.65rem 1.75rem;
+                font-size: 0.9rem;
+            }
+
+            .mobile-menu-btn {
+                display: none;
+            }
+
+            .hero {
+                margin-top: 85px;
+                padding: 4rem 2rem 3rem;
+            }
+
+            .hero::before {
+                width: 500px;
+                height: 500px;
+            }
+
+            h1 {
+                font-size: 3rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .btn-large {
+                padding: 1.1rem 2.5rem;
+                font-size: 1rem;
+            }
+
+            .sample, .instagram-section, .contact {
+                padding: 4.5rem 2rem;
+            }
+
+            h2 {
+                font-size: 2.25rem;
+            }
+
+            .section-subtitle {
+                font-size: 1rem;
+            }
+
+            .contact-form-container {
+                padding: 3rem;
+            }
+
+            .sample-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.25rem;
+            }
+        }
+
+        /* Large Desktop */
+        @media (min-width: 1024px) {
+            .hero {
+                max-width: 1000px;
+            }
+
+            .sample-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">
+                <div class="logo-icon">✎</div>
+                <span>Emma Commission</span>
+            </a>
+            <div class="nav-links">
+                <a href="#sample">Sample</a>
+                <a href="#instagram">Instagram</a>
+                <a href="#contact" class="btn-primary">Order Now</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu-close" onclick="toggleMenu()">✕</button>
+        <a href="#sample" onclick="toggleMenu()">Sample</a>
+        <a href="#instagram" onclick="toggleMenu()">Instagram</a>
+        <a href="#contact" class="btn-primary" onclick="toggleMenu()">Order Now</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="badge">Now Accepting Commissions</div>
+        <h1>Order Your <span>Custom Drawing</span></h1>
+        <p class="subtitle">Bespoke digital illustrations tailored to your vision. High-end, custom artwork for your unique projects.</p>
+        <a href="#contact" class="btn-large">
+            Order Now →
+        </a>
+    </section>
+
+    <!-- Sample Section -->
+    <section class="sample" id="sample">
+        <div class="container">
+            <div class="section-header">
+                <h2>Sample Artworks</h2>
+                <p class="section-subtitle">Browse through our collection of completed commissions</p>
+            </div>
+            
+            <!-- Google Drive Button -->
+            <div class="drive-button-container">
+                <a href="https://drive.google.com/your-drive-link" target="_blank" class="btn-drive">
+                    View More on Google Drive
+                </a>
+            </div>
+            
+            <div class="sample-grid" id="sampleGrid">
+                <!-- Sample items will be inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Instagram Section - UPDATED -->
+    <section class="instagram-section" id="instagram">
+        <div class="container">
+            <div class="section-header">
+                <h2>Follow on Instagram</h2>
+                <p class="section-subtitle">See my latest artworks, process videos, and daily updates</p>
+            </div>
+            
+            <div class="instagram-card">
+                <div class="instagram-icon-large">
+                    <img src="images/instagram-icon.png" alt="Instagram" />
+                </div>
+                <h3 class="instagram-handle">@wuupii.ayy</h3>
+                <p class="instagram-followers">Digital Artist & Illustrator</p>
+                
+                <a href="https://www.instagram.com/wuupii.ayy" target="_blank" class="instagram-btn">
+                    <span>Follow on Instagram</span>
+                    <span>→</span>
+                </a>
+                
+                <div class="instagram-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">8+</div>
+                        <div class="stat-label">Artworks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Quality</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Support</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="contact-form-container">
+            <div class="contact-header">
+                <h2>Start an Inquiry</h2>
+                <p>Tell us about your vision and let's bring it to life.</p>
+            </div>
+            <form id="orderForm" onsubmit="sendToWhatsApp(event)">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="Damian" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="details">Project Details</label>
+                    <textarea id="details" name="details" placeholder="Describe your character, concept, pose, colors..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-whatsapp">
+                    Send to WhatsApp
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Emma Commission © 2026 - All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // ============================================
+        // ⚙️ KONFIGURASI - UBAH DI SINI
+        // ============================================
+        
+        const CONFIG = {
+            // Nomor WhatsApp (format: 628xxx)
+            whatsappNumber: '6281235071498',
+            
+            // Link Google Drive
+            googleDriveLink: 'https://drive.google.com/drive/folders/1-pWRSeZDWc7e5uor36SMi8WjWYJb4yjm',
+            
+            // Instagram Link
+            instagramLink: 'https://www.instagram.com/wuupii.ayy',
+            
+            // Sample Artworks (untuk custom gambar local)
+            sampleItems: [
+                { title: 'Elegant Female Portrait', category: 'Character', icon: '⚔️', image: 'images/sample1.jpg' },
+                { title: 'Romantic Couple Portrait', category: 'Portrait', icon: '👤', image: 'images/sample2.jpg' },
+                { title: 'Mystery Masked Character', category: 'Chibi Art', icon: '🌟', image: 'images/sample3.jpg' },
+                { title: 'Fantasy Couple / Vampire Romance', category: 'Character', icon: '🐉', image: 'images/sample4.jpg' },
+                { title: 'Dark Assassin / Ninja Portrait', category: 'Portrait', icon: '💕', image: 'images/sample5.jpg' },
+                { title: 'Gothic Couple Illustration', category: 'Chibi Art', icon: '🎀', image: 'images/sample6.jpg' },
+                { title: 'Fantasy Love Scene', category: 'Character', icon: '🏹', image: 'images/sample7.jpg' },
+                { title: 'Soft Anime Close-Up Portrait', category: 'Portrait', icon: '🐱', image: 'images/sample8.jpg' }
+            ]
+        };
+
+        // ============================================
+        // 🎨 RENDER FUNCTIONS
+        // ============================================
+
+        // Render Sample Grid
+        function renderSample() {
+            const grid = document.getElementById('sampleGrid');
+            grid.innerHTML = CONFIG.sampleItems.map(item => {
+                if (item.image) {
+                    return `
+                        <div class="sample-item" style="background: none; padding: 0;">
+                            <img src="${item.image}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="sample-overlay">
+                                <div class="sample-title">${item.title}</div>
+                                <div class="sample-category">${item.category}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="sample-item">
+                            <div class="sample-placeholder">${item.icon}</div>
+                            <div class="sample-title">${item.title}</div>
+                            <div class="sample-category">${item.category}</div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // Update Instagram Link
+        function updateInstagramLink() {
+            const instagramBtn = document.querySelector('.instagram-btn');
+            if (instagramBtn && CONFIG.instagramLink) {
+                instagramBtn.href = CONFIG.instagramLink;
+            }
+        }
+
+        // Update Google Drive Link
+        function updateDriveLink() {
+            const driveBtn = document.querySelector('.btn-drive');
+            if (driveBtn && CONFIG.googleDriveLink) {
+                driveBtn.href = CONFIG.googleDriveLink;
+            }
+        }
+
+        // Send to WhatsApp
+        function sendToWhatsApp(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const details = document.getElementById('details').value;
+            
+            const message = `Halo Emma! Saya ingin order commission.%0A%0A*Name:* ${name}%0A*Details:* ${details}%0A%0ATerima kasih!`;
+            
+            const whatsappURL = `https://wa.me/${CONFIG.whatsappNumber}?text=${message}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ============================================
+        // 🚀 INITIALIZE
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSample();
+            updateInstagramLink();
+            updateDriveLink();
+            
+            document.getElementById('orderForm').addEventListener('submit', sendToWhatsApp);
+        });
+
+    </script>
+
+</body>
+</html>
