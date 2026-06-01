@@ -473,6 +473,11 @@
                     statusSpan.textContent = '✅ Upload berhasil!';
                     statusSpan.style.color = '#10b981';
                     
+                    // Cek apakah Cloudinary memblokir pemberian tag
+                    if (!data.tags || !data.tags.includes('emmasion_gallery')) {
+                        alert("⚠️ PERINGATAN CLOUDINARY:\nGambar berhasil masuk ke Cloudinary, TAPI ditolak masuk ke web karena Upload Preset Anda belum diatur untuk menerima Tag.\n\nBuka Setingan Upload Preset di Cloudinary, cari kolom 'Tags', lalu isi dengan: emmasion_gallery");
+                    }
+
                     renderGallery(); // Render ulang galeri agar gambar baru muncul
 
                     setTimeout(() => statusSpan.style.display = 'none', 3000);
