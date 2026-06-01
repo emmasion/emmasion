@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emma Commission - Custom Digital Art</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Anti-Cache Meta Tags agar HP selalu memuat versi terbaru dari server -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <style>
         * {
             margin: 0;
@@ -1138,6 +1142,12 @@
             }
         }
 
+        // Fitur Logout Admin
+        function logoutAdmin() {
+            localStorage.removeItem('isAdmin');
+            location.reload();
+        }
+
         // Mobile Menu Toggle
         function toggleMenu() {
             const mobileMenu = document.getElementById('mobileMenu');
@@ -1160,6 +1170,24 @@
         // ============================================
         
         document.addEventListener('DOMContentLoaded', () => {
+            // Tampilkan Banner Peringatan jika sedang dalam mode Admin
+            if (isAdmin) {
+                const banner = document.createElement('div');
+                banner.style.background = '#10b981';
+                banner.style.color = 'white';
+                banner.style.padding = '0.5rem';
+                banner.style.textAlign = 'center';
+                banner.style.fontSize = '0.8rem';
+                banner.style.fontWeight = 'bold';
+                banner.style.position = 'fixed';
+                banner.style.top = '0';
+                banner.style.width = '100%';
+                banner.style.zIndex = '9999';
+                banner.innerHTML = '🔧 Mode Admin Aktif (Melihat Preview Lokal). <a href="#" onclick="logoutAdmin()" style="color:white; text-decoration:underline;">Klik Logout untuk melihat versi publik</a>';
+                document.body.appendChild(banner);
+                document.getElementById('navbar').style.top = '32px'; // Geser navbar ke bawah
+            }
+
             renderSample();
             updateInstagramLink();
             updateDriveLink();
