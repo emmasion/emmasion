@@ -22,7 +22,7 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top right, #fff0f6 0%, #ffffff 50%, #fdf2f8 100%);
+            background: linear-gradient(135deg, #fefeff 0%, #fef8f9 50%, #fff0f4 100%); /* Softer, warmer background */
             color: #1a1a1a;
             line-height: 1.6;
             overflow-x: hidden;
@@ -34,11 +34,11 @@
             top: 0;
             width: 100%;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(15px); /* Slightly less blur */
             z-index: 1000;
             padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(236, 72, 153, 0.15);
-            box-shadow: 0 2px 20px rgba(236, 72, 153, 0.08);
+            border-bottom: none; /* No harsh bottom border */
+            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.08); /* Softer shadow */
             transition: all 0.3s ease;
         }
 
@@ -48,7 +48,7 @@
             box-shadow: 0 4px 30px rgba(236, 72, 153, 0.12);
         }
 
-        .nav-container {
+        .nav-container { /* Rounded navigation container */
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 1rem;
@@ -62,7 +62,7 @@
             align-items: center;
             gap: 0.5rem;
             font-weight: 700;
-            color: #ec4899;
+            color: #eb6899; /* Slightly softer pink */
             font-size: 1rem;
             text-decoration: none;
             transition: transform 0.3s ease;
@@ -72,19 +72,6 @@
             transform: scale(1.02);
         }
 
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.35);
-            transition: all 0.3s ease;
-        }
 
         .nav-links {
             display: flex;
@@ -107,7 +94,7 @@
             bottom: -5px;
             left: 0;
             width: 0;
-            height: 2px;
+            height: 3px; /* Thicker underline */
             background: linear-gradient(90deg, #ec4899, #f472b6);
             transition: width 0.3s ease;
         }
@@ -121,7 +108,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            background: linear-gradient(135deg, #f78da7 0%, #fbb7c9 100%); /* Softer pink gradient */
             color: white;
             padding: 0.55rem 1.25rem;
             border-radius: 9999px;
@@ -129,15 +116,15 @@
             font-weight: 700;
             font-size: 0.8rem;
             transition: all 0.3s;
-            border: none;
+            border: none; /* No border for primary buttons */
             cursor: pointer;
-            box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 6px 20px rgba(247, 141, 167, 0.4); /* Softer, slightly bigger shadow */
             white-space: nowrap;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.45);
+            box-shadow: 0 10px 30px rgba(247, 141, 167, 0.6); /* More prominent hover shadow */
         }
 
         .nav-links a.btn-primary {
@@ -241,7 +228,7 @@
             width: 250px;
             height: 250px;
             background: linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(244, 114, 182, 0.2) 100%);
-            animation: morphBlob 8s ease-in-out infinite alternate;
+            animation: morphBlob 10s ease-in-out infinite alternate; /* Slower, more gentle animation */
             z-index: -1;
         }
 
@@ -254,17 +241,17 @@
         .badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-            color: #ec4899;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #ffdee9 0%, #ffc3d6 100%); /* Lighter, more playful badge */
+            color: #eb6899;
             padding: 0.4rem 0.875rem;
             border-radius: 9999px;
-            font-size: 0.65rem;
+            font-size: 0.7rem; /* Slightly larger text */
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 1.25rem;
-            border: 2px solid rgba(236, 72, 153, 0.2);
+            border: 1px solid rgba(255, 195, 214, 0.8); /* Softer border */
         }
 
         .badge::before {
@@ -282,12 +269,12 @@
             font-size: 1.75rem;
             font-weight: 800;
             line-height: 1.2;
-            margin-bottom: 0.875rem;
+            margin-bottom: 1rem; /* A little more space */
             color: #1a1a1a;
         }
 
         h1 span {
-            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            background: linear-gradient(135deg, #f78da7 0%, #fbb7c9 100%); /* Softer gradient for text */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -302,23 +289,23 @@
         }
 
         .btn-large {
-            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            background: linear-gradient(135deg, #f78da7 0%, #fbb7c9 100%); /* Softer gradient */
             color: white;
             padding: 0.875rem 1.75rem;
             border-radius: 9999px;
             text-decoration: none;
             font-weight: 700;
             display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.3s;
+            align-items: center; /* Centered content */
+            gap: 0.5rem; /* Slightly larger gap */
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncier animation */
             font-size: 0.875rem;
-            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.35);
+            box-shadow: 0 8px 24px rgba(247, 141, 167, 0.5); /* Stronger, softer shadow */
         }
 
         .btn-large:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 12px 32px rgba(236, 72, 153, 0.45);
+            transform: translateY(-5px) scale(1.05); /* More pronounced lift and scale */
+            box-shadow: 0 15px 40px rgba(247, 141, 167, 0.7); /* Even stronger shadow */
         }
 
         /* Sample Section */
@@ -375,7 +362,7 @@
         }
 
         .btn-drive:hover {
-            transform: translateY(-3px) scale(1.03);
+            transform: translateY(-5px) scale(1.05); /* Bouncier */
             box-shadow: 0 8px 24px rgba(236, 72, 153, 0.4);
         }
 
@@ -397,17 +384,13 @@
             position: relative;
             border-radius: 1rem;
             overflow: hidden;
-            aspect-ratio: 1;
-            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            aspect-ratio: 1 / 1.2; /* Slightly taller than square */
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe6ed 100%); /* Lighter background */
+            border: 1px solid rgba(255, 220, 230, 0.8); /* Softer border */
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.05);
+            align-items: center; /* Centered */
+
         }
 
         .sample-item:hover {
@@ -453,18 +436,14 @@
             width: 100%;
             background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
             padding: 2rem 1rem 1rem;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
             text-align: left;
         }
 
-        .sample-item:hover .sample-overlay {
-            transform: translateY(0);
-        }
 
         .sample-overlay .sample-title,
         .sample-overlay .sample-category {
             color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         /* Instagram Section - UPDATED */
@@ -743,7 +722,7 @@
         .login-close:hover { color: #ec4899; }
         .login-popup h3 { margin-bottom: 0.5rem; font-size: 1.5rem; }
         .login-popup p { color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }
-        .login-error { color: #ef4444; font-size: 0.8rem; display: none; font-weight: 600; margin-top: 0.5rem; }
+        .login-error { color: #ef4444; font-size: 0.8rem; display: none; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.5rem; }
         .login-popup input {
             text-align: center;
             margin-bottom: 0;
@@ -887,7 +866,6 @@
     <nav id="navbar">
         <div class="nav-container">
             <a href="#" class="logo">
-                <div class="logo-icon">✎</div>
                 <span>Emma Commission</span>
             </a>
             <div class="nav-links">
@@ -1009,7 +987,7 @@
             <p>Masukkan kata sandi untuk mengakses Dashboard Admin.</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <input type="password" id="adminPassword" placeholder="••••••••" required>
-                <div id="loginError" class="login-error">❌ Password salah! Coba lagi.</div>
+                <div id="loginError" class="login-error">Password salah! Coba lagi.</div>
                 <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1.25rem; padding: 0.85rem;">Login ke Dashboard</button>
             </form>
         </div>
@@ -1039,6 +1017,9 @@
             // Pengaturan Cloudinary
             cloudinaryName: 'dsnion1vf',
             
+            sampleTitles: {},
+            
+            sampleCategories: {}
             // Catatan: uploadPreset, apiKey, dan apiSecret sengaja DIHAPUS dari sini 
             // demi keamanan. Pengaturan rahasia tersebut HANYA ada di admin.html.
         };
@@ -1067,12 +1048,17 @@
                 
                 grid.innerHTML = data.resources.map(res => {
                     const imageUrl = `https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/upload/f_auto,q_auto/${res.public_id}.${res.format}`;
+                    
+                    const defaultTitle = res.public_id.split('/').pop().replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                    const titleName = (CONFIG.sampleTitles && CONFIG.sampleTitles[res.public_id]) ? CONFIG.sampleTitles[res.public_id] : defaultTitle;
+                    const categoryName = (CONFIG.sampleCategories && CONFIG.sampleCategories[res.public_id]) ? CONFIG.sampleCategories[res.public_id] : 'Digital Art';
+                    
                     return `
                         <div class="sample-item" style="background: none; padding: 0;">
                             <img src="${imageUrl}" alt="Artwork">
                             <div class="sample-overlay">
-                                <div class="sample-title">Custom Commission</div>
-                                <div class="sample-category">Digital Art</div>
+                                <div class="sample-title">${titleName}</div>
+                                <div class="sample-category">${categoryName}</div>
                             </div>
                         </div>
                     `;
@@ -1169,7 +1155,7 @@
             // Tampilkan Banner Peringatan jika sedang dalam mode Admin
             if (isAdmin) {
                 const banner = document.createElement('div');
-                banner.style.background = '#10b981';
+                banner.style.background = '#1e293b';
                 banner.style.color = 'white';
                 banner.style.padding = '0.5rem';
                 banner.style.textAlign = 'center';
@@ -1179,9 +1165,11 @@
                 banner.style.top = '0';
                 banner.style.width = '100%';
                 banner.style.zIndex = '9999';
-                banner.innerHTML = '🔧 Mode Admin Aktif (Melihat Preview Lokal). <a href="#" onclick="logoutAdmin()" style="color:white; text-decoration:underline;">Klik Logout untuk melihat versi publik</a>';
+                banner.innerHTML = `Mode Admin Aktif (Melihat Preview Lokal). 
+                    <a href="admin.html" style="background: #ec4899; color: white; padding: 3px 10px; border-radius: 4px; text-decoration: none; margin: 0 10px; display: inline-block;">Kembali ke Dashboard</a>
+                    <a href="#" onclick="logoutAdmin()" style="color:#cbd5e1; text-decoration:underline;">Logout</a>`;
                 document.body.appendChild(banner);
-                document.getElementById('navbar').style.top = '32px'; // Geser navbar ke bawah
+                document.getElementById('navbar').style.top = '40px'; // Geser navbar ke bawah
             }
 
             renderSample();

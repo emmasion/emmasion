@@ -8,23 +8,28 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #f1f5f9;
+            background: #f8fafc;
             color: #1e293b;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
         }
         .navbar {
-            background: white;
+            background: #ffffff;
             padding: 1rem 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .navbar h1 {
             margin: 0;
             font-size: 1.25rem;
             color: #ec4899;
+            font-weight: 800;
         }
         .navbar a {
             color: #64748b;
@@ -42,10 +47,10 @@
         }
         .card {
             background: white;
-            border-radius: 1rem;
+            border-radius: 0.5rem;
             padding: 2rem;
-            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
-            border: 1px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
         }
         .settings-grid {
             display: grid;
@@ -92,35 +97,26 @@
             border-color: #e2e8f0;
         }
         .btn {
-            background: #ec4899;
+            background: #0f172a;
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
+            border-radius: 0.35rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
             width: 100%;
         }
         .btn:hover {
-            background: #db2777;
+            background: #334155;
         }
         .btn-danger {
             background: #ef4444;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
             border-radius: 0.35rem;
-            width: auto;
         }
         .btn-danger:hover {
             background: #dc2626;
-        }
-        .btn-add {
-            background: #10b981;
-            margin-top: 1rem;
-        }
-        .btn-add:hover {
-            background: #059669;
         }
         
         /* Gallery Grid Layout */
@@ -138,31 +134,30 @@
         .sample-item-edit {
             background: white;
             border: 1px solid #e2e8f0;
-            border-radius: 1rem;
+            border-radius: 0.5rem;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
         .sample-item-edit:hover {
             border-color: #cbd5e1;
-            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
-            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
         .sample-preview-container {
             position: relative;
-            height: 200px;
+            height: 220px;
             background: #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 0.5rem;
         }
         .sample-preview-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 0.25rem;
         }
         .sample-actions {
             position: absolute;
@@ -195,6 +190,7 @@
             transform: translateY(0);
         }
 
+
         /* Mobile Responsiveness */
         @media (max-width: 640px) {
             .navbar {
@@ -208,8 +204,8 @@
                 gap: 1rem;
             }
             .card {
-            padding: 1rem;
-                border-radius: 0.75rem;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
             }
             .gallery-grid {
                 grid-template-columns: 1fr;
@@ -311,16 +307,29 @@
 
         <!-- Pengaturan Galeri -->
         <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
-            <div class="card-header">Manajemen Galeri / Sample</div>
-            <div style="background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
-                <label style="display:block; margin-bottom: 0.5rem; font-weight: 600;">Upload Karya Baru (Otomatis masuk ke web)</label>
-                <div style="display: flex; gap: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="flex: 1; min-width: 250px;">
+                    <h2 style="margin: 0; font-size: 1.5rem; color: #1e293b;">Galeri Karya</h2>
+                    <p style="color: #64748b; font-size: 0.85rem; margin: 0.25rem 0 0;">Kelola gambar dan edit tag/judulnya di sini.</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="searchInput" placeholder="Cari judul gambar..." onkeyup="filterGallery()" style="padding: 0.6rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; flex: 1; min-width: 200px;">
                     <input type="file" id="newImageUpload" accept="image/*" style="display: none;" onchange="uploadNewImage(this)">
-                    <button class="btn btn-add" style="margin-top: 0;" onclick="document.getElementById('newImageUpload').click()">Pilih Gambar & Upload</button>
-                    <span id="mainUploadStatus" style="align-self: center; font-size: 0.85rem; font-weight: 600;"></span>
+                    <button class="btn" style="width: auto; padding: 0.6rem 1.25rem; font-size: 0.85rem; background: #ec4899; color: white;" onclick="document.getElementById('newImageUpload').click()">+ Upload Gambar Baru</button>
+                    <span id="mainUploadStatus" style="font-size: 0.8rem; font-weight: 600;"></span>
                 </div>
             </div>
             <div id="galleryContainer" class="gallery-grid"></div>
+        </div>
+        
+        <!-- Sinkronisasi ke Website Utama -->
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header" style="color: #ec4899;">Sinkronisasi ke Website Utama (Export)</div>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem; line-height: 1.5;">Karena website ini bersifat statis (tanpa database), perubahan di dashboard hanya tersimpan di browser Anda. Untuk membuat perubahan <strong>permanen</strong> bagi semua pengunjung publik, salin kode di bawah ini dan paste/gantikan ke dalam file <code>index.html</code> (cari bagian <code>DEFAULT_CONFIG</code>).</p>
+            
+            <textarea id="exportConfigArea" readonly style="width: 100%; height: 250px; padding: 1rem; font-family: monospace; font-size: 0.8rem; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 0.5rem; resize: vertical;"></textarea>
+            
+            <button class="btn" onclick="copyExportConfig()" style="margin-top: 1rem; width: auto; background: #10b981;">📋 Salin Kode Config</button>
         </div>
     </div>
 
@@ -336,6 +345,8 @@
             uploadPreset: 'dtlq8dnh',
             cloudinaryApiKey: '',
             cloudinaryApiSecret: '',
+            sampleTitles: {},
+            sampleCategories: {}
         };
 
         let currentConfig = {};
@@ -356,6 +367,7 @@
             document.getElementById('cloudinaryApiSecret').value = currentConfig.cloudinaryApiSecret || '';
             
             renderGallery();
+            updateExportConfig();
         }
 
         // Render Gallery Dinamis dari Cloudinary List
@@ -373,13 +385,25 @@
                 
                 container.innerHTML = data.resources.map(res => {
                     const imgSrc = `https://res.cloudinary.com/${cloudName}/image/upload/w_400,h_300,c_fill,f_auto/${res.public_id}.${res.format}`;
+                    
+                    const defaultTitle = res.public_id.split('/').pop().replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                    const currentTitle = (currentConfig.sampleTitles && currentConfig.sampleTitles[res.public_id]) ? currentConfig.sampleTitles[res.public_id] : defaultTitle;
+                    const currentCategory = (currentConfig.sampleCategories && currentConfig.sampleCategories[res.public_id]) ? currentConfig.sampleCategories[res.public_id] : 'Digital Art';
+                    
                     return `
                         <div class="sample-item-edit">
-                            <div class="sample-preview-container" style="height: 150px;">
+                            <div class="sample-preview-container">
                                 <img src="${imgSrc}" style="display: block" class="preview-img">
                                 <div class="sample-actions">
-                                    <button class="btn btn-danger" style="padding: 0.5rem; background: #ef4444;" onclick="removeImage('${res.public_id}', this)" title="Hapus Gambar">Hapus Permanen</button>
+                                    <button class="btn btn-danger" style="padding: 0.4rem 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" onclick="removeImage('${res.public_id}', this)" title="Hapus Gambar">Hapus</button>
                                 </div>
+                            </div>
+                            <div style="padding: 0.75rem; border-top: 1px solid #e2e8f0; background: #fafafa;">
+                                <label style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem; display: block;">Judul Gambar</label>
+                                <input type="text" class="title-input" data-id="${res.public_id}" value="${currentTitle}" onchange="updateImageTitle('${res.public_id}', this.value)" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 0.35rem; border: 1px solid #cbd5e1; background: white; margin-bottom: 0.5rem;" placeholder="Ketik judul gambar...">
+                                
+                                <label style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem; display: block;">Kategori / Tag</label>
+                                <input type="text" class="category-input" data-id="${res.public_id}" value="${currentCategory}" onchange="updateImageCategory('${res.public_id}', this.value)" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 0.35rem; border: 1px solid #cbd5e1; background: white;" placeholder="Misal: Digital Art">
                             </div>
                         </div>
                     `;
@@ -387,6 +411,42 @@
             } catch (error) {
                 container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ef4444;">Belum ada gambar, atau Anda belum mematikan centang "Resource list" di pengaturan Security Cloudinary.</div>';
             }
+        }
+
+        // Update Judul Gambar (Live Preview)
+        function updateImageTitle(publicId, newTitle) {
+            if (!currentConfig.sampleTitles) currentConfig.sampleTitles = {};
+            currentConfig.sampleTitles[publicId] = newTitle;
+            localStorage.setItem('emmaConfig', JSON.stringify(currentConfig)); // Sinkron ke tab sebelah
+            updateExportConfig();
+        }
+        
+        // Update Kategori Gambar (Live Preview)
+        function updateImageCategory(publicId, newCategory) {
+            if (!currentConfig.sampleCategories) currentConfig.sampleCategories = {};
+            currentConfig.sampleCategories[publicId] = newCategory;
+            localStorage.setItem('emmaConfig', JSON.stringify(currentConfig)); // Sinkron ke tab sebelah
+            updateExportConfig();
+        }
+
+        // Filter Galeri berdasarkan Judul
+        function filterGallery() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.sample-item-edit');
+
+            items.forEach(item => {
+                const titleInput = item.querySelector('.title-input');
+                const categoryInput = item.querySelector('.category-input');
+                const title = titleInput ? titleInput.value.toLowerCase() : '';
+                const category = categoryInput ? categoryInput.value.toLowerCase() : '';
+                
+                if (title.includes(filter) || category.includes(filter)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         // Utility: SHA-1 Hash untuk Signature Cloudinary
@@ -430,7 +490,7 @@
         // Hapus File Gambar Saja
         async function removeImage(publicId, btnNode) {
             if(!confirm('Hapus file gambar ini permanen dari Cloudinary?')) return;
-            btnNode.textContent = '⏳ Menghapus...';
+            btnNode.textContent = 'Menghapus...';
             btnNode.disabled = true;
             await deleteFromCloudinary(publicId);
             setTimeout(() => renderGallery(), 1000); // Render ulang galeri setelah dihapus
@@ -457,8 +517,8 @@
             const statusSpan = document.getElementById('mainUploadStatus');
             
             statusSpan.style.display = 'block';
-            statusSpan.style.color = '#ec4899';
-            statusSpan.textContent = '⏳ Sedang mengupload ke Cloudinary...';
+            statusSpan.style.color = '#64748b';
+            statusSpan.textContent = 'Sedang mengupload ke Cloudinary...';
 
             const formData = new FormData();
             formData.append('file', file);
@@ -470,12 +530,12 @@
                 const data = await response.json();
                 
                 if (response.ok && data.secure_url) {
-                    statusSpan.textContent = '✅ Upload berhasil!';
+                    statusSpan.textContent = 'Upload berhasil!';
                     statusSpan.style.color = '#10b981';
                     
                     // Cek apakah Cloudinary memblokir pemberian tag
                     if (!data.tags || !data.tags.includes('emmasion_gallery')) {
-                        alert("⚠️ PERINGATAN CLOUDINARY:\nGambar berhasil masuk ke Cloudinary, TAPI ditolak masuk ke web karena Upload Preset Anda belum diatur untuk menerima Tag.\n\nBuka Setingan Upload Preset di Cloudinary, cari kolom 'Tags', lalu isi dengan: emmasion_gallery");
+                        alert("PERINGATAN CLOUDINARY:\nGambar berhasil masuk ke Cloudinary, TAPI ditolak masuk ke web karena Upload Preset Anda belum diatur untuk menerima Tag.\n\nBuka Setingan Upload Preset di Cloudinary, cari kolom 'Tags', lalu isi dengan: emmasion_gallery");
                     }
 
                     renderGallery(); // Render ulang galeri agar gambar baru muncul
@@ -483,7 +543,7 @@
                     setTimeout(() => statusSpan.style.display = 'none', 3000);
                 } else throw new Error(data.error?.message || 'Upload gagal');
             } catch (error) {
-                statusSpan.textContent = '❌ Error: ' + error.message;
+                statusSpan.textContent = 'Error: ' + error.message;
                 statusSpan.style.color = '#ef4444';
             }
             fileInput.value = ''; // Reset input agar bisa upload file yang sama lagi jika perlu
@@ -499,13 +559,64 @@
             currentConfig.cloudinaryApiKey = document.getElementById('cloudinaryApiKey').value;
             currentConfig.cloudinaryApiSecret = document.getElementById('cloudinaryApiSecret').value;
 
+            // Pastikan semua ketikan judul gambar tertangkap dan tersimpan
+            if (!currentConfig.sampleTitles) currentConfig.sampleTitles = {};
+            if (!currentConfig.sampleCategories) currentConfig.sampleCategories = {};
+            
+            document.querySelectorAll('.title-input').forEach(input => {
+                currentConfig.sampleTitles[input.getAttribute('data-id')] = input.value;
+            });
+            document.querySelectorAll('.category-input').forEach(input => {
+                currentConfig.sampleCategories[input.getAttribute('data-id')] = input.value;
+            });
+
             // Simpan ke Local Storage
             localStorage.setItem('emmaConfig', JSON.stringify(currentConfig));
+            updateExportConfig();
             
             // Tampilkan Notifikasi
             const notif = document.getElementById('notif');
             notif.classList.add('show');
             setTimeout(() => notif.classList.remove('show'), 3000);
+        }
+
+        // Generate Export Config
+        function updateExportConfig() {
+            const exportData = {
+                whatsappNumber: currentConfig.whatsappNumber || '',
+                googleDriveLink: currentConfig.googleDriveLink || '',
+                instagramLink: currentConfig.instagramLink || '',
+                cloudinaryName: currentConfig.cloudinaryName || '',
+                sampleTitles: currentConfig.sampleTitles || {},
+                sampleCategories: currentConfig.sampleCategories || {}
+            };
+            
+            const configString = `const DEFAULT_CONFIG = {\n` +
+                `    // Nomor WhatsApp (format: 628xxx)\n` +
+                `    whatsappNumber: '${exportData.whatsappNumber}',\n` +
+                `    \n` +
+                `    // Link Google Drive\n` +
+                `    googleDriveLink: '${exportData.googleDriveLink}',\n` +
+                `    \n` +
+                `    // Instagram Link\n` +
+                `    instagramLink: '${exportData.instagramLink}',\n` +
+                `    \n` +
+                `    // Pengaturan Cloudinary\n` +
+                `    cloudinaryName: '${exportData.cloudinaryName}',\n` +
+                `    \n` +
+                `    sampleTitles: ${JSON.stringify(exportData.sampleTitles, null, 4).split('\\n').join('\\n    ')},\n` +
+                `    \n` +
+                `    sampleCategories: ${JSON.stringify(exportData.sampleCategories, null, 4).split('\\n').join('\\n    ')}\n` +
+                `};`;
+                
+            document.getElementById('exportConfigArea').value = configString;
+        }
+
+        function copyExportConfig() {
+            const area = document.getElementById('exportConfigArea');
+            area.select();
+            document.execCommand('copy');
+            alert('Kode konfigurasi berhasil disalin! Buka file index.html dan timpa bagian DEFAULT_CONFIG untuk membuat perubahan ini permanen.');
         }
 
         // Inisialisasi awal
