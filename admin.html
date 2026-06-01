@@ -8,16 +8,18 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
+            background: radial-gradient(circle, #fbcfe8 1.5px, transparent 1.5px), linear-gradient(135deg, #fff0f4 0%, #fef8f9 50%, #ffe4ec 100%);
+            background-size: 28px 28px, 100% 100%;
+            color: #4a4a4a;
             margin: 0;
             padding: 0;
             min-height: 100vh;
         }
         .navbar {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
             padding: 1rem 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -32,10 +34,18 @@
             font-weight: 800;
         }
         .navbar a {
-            color: #64748b;
+            color: #ec4899;
+            background: #fff0f4;
+            padding: 0.5rem 1.2rem;
+            border-radius: 9999px;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .navbar a:hover {
+            background: #fce7f3;
+            transform: translateY(-2px);
         }
         .container {
             max-width: 1200px;
@@ -46,11 +56,11 @@
             gap: 2rem;
         }
         .card {
-            background: white;
-            border-radius: 0.5rem;
-            padding: 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.15);
+            border: 2px dashed #fbb7c9;
         }
         .settings-grid {
             display: grid;
@@ -133,16 +143,18 @@
         }
         .sample-item-edit {
             background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
+            border: 2px solid transparent;
+            border-radius: 1.25rem;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.08);
         }
         .sample-item-edit:hover {
-            border-color: #cbd5e1;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-color: #fbb7c9;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.15);
         }
         .sample-preview-container {
             position: relative;
@@ -321,16 +333,6 @@
             </div>
             <div id="galleryContainer" class="gallery-grid"></div>
         </div>
-        
-        <!-- Sinkronisasi ke Website Utama -->
-        <div class="card" style="margin-top: 2rem; display: none;">
-            <div class="card-header" style="color: #ec4899;">Sinkronisasi ke Website Utama (Export)</div>
-            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem; line-height: 1.5;">Karena website ini bersifat statis (tanpa database), perubahan di dashboard hanya tersimpan di browser Anda. Untuk membuat perubahan <strong>permanen</strong> bagi semua pengunjung publik, salin kode di bawah ini dan paste/gantikan ke dalam file <code>index.html</code> (cari bagian <code>DEFAULT_CONFIG</code>).</p>
-            
-            <textarea id="exportConfigArea" readonly style="width: 100%; height: 250px; padding: 1rem; font-family: monospace; font-size: 0.8rem; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 0.5rem; resize: vertical;"></textarea>
-            
-            <button class="btn" onclick="copyExportConfig()" style="margin-top: 1rem; width: auto; background: #10b981;">📋 Salin Kode Config</button>
-        </div>
     </div>
 
     <div class="notification" id="notif">Perubahan berhasil disimpan!</div>
@@ -367,7 +369,6 @@
             document.getElementById('cloudinaryApiSecret').value = currentConfig.cloudinaryApiSecret || '';
             
             renderGallery();
-            updateExportConfig();
         }
 
         // Render Gallery Dinamis dari Cloudinary List
@@ -395,6 +396,7 @@
                             <div class="sample-preview-container">
                                 <img src="${imgSrc}" style="display: block" class="preview-img">
                                 <div class="sample-actions">
+                                    <button class="btn" style="background: #eab308; padding: 0.4rem 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" onclick="renameImageInCloudinary('${res.public_id}', this)" title="Ganti Nama File Asli">Rename</button>
                                     <button class="btn btn-danger" style="padding: 0.4rem 0.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" onclick="removeImage('${res.public_id}', this)" title="Hapus Gambar">Hapus</button>
                                 </div>
                             </div>
@@ -418,7 +420,6 @@
             if (!currentConfig.sampleTitles) currentConfig.sampleTitles = {};
             currentConfig.sampleTitles[publicId] = newTitle;
             localStorage.setItem('emmaConfig', JSON.stringify(currentConfig)); // Sinkron ke tab sebelah
-            updateExportConfig();
         }
         
         // Update Kategori Gambar (Live Preview)
@@ -426,7 +427,6 @@
             if (!currentConfig.sampleCategories) currentConfig.sampleCategories = {};
             currentConfig.sampleCategories[publicId] = newCategory;
             localStorage.setItem('emmaConfig', JSON.stringify(currentConfig)); // Sinkron ke tab sebelah
-            updateExportConfig();
         }
 
         // Filter Galeri berdasarkan Judul
@@ -447,6 +447,70 @@
                     item.style.display = 'none';
                 }
             });
+        }
+
+        // Fitur Rename File Langsung di Cloudinary
+        async function renameImageInCloudinary(publicId, btnNode) {
+            const cloudName = document.getElementById('cloudinary').value;
+            const apiKey = document.getElementById('cloudinaryApiKey').value;
+            const apiSecret = document.getElementById('cloudinaryApiSecret').value;
+
+            if (!apiKey || !apiSecret) {
+                alert("API Key & Secret kosong! Dibutuhkan untuk merename file di Cloudinary.");
+                return;
+            }
+
+            const oldNameOnly = publicId.split('/').pop();
+            const rawNewName = prompt("Masukkan nama file baru untuk Cloudinary (tanpa spasi/simbol):", oldNameOnly);
+            
+            if (!rawNewName || rawNewName === oldNameOnly) return;
+            
+            // Format nama agar aman untuk URL/Sistem (huruf kecil & ganti spasi jadi underscore)
+            const formattedName = rawNewName.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+            const folder = publicId.substring(0, publicId.lastIndexOf('/') + 1);
+            const newPublicId = folder + formattedName;
+
+            if (!confirm(`Yakin ingin merename file dari "${oldNameOnly}" menjadi "${formattedName}" di Cloudinary?`)) return;
+
+            btnNode.textContent = 'Proses...';
+            btnNode.disabled = true;
+
+            const timestamp = Math.floor(Date.now() / 1000);
+            
+            // Rumus Signature Cloudinary Rename (Parameter diurutkan Abjad: from, time, to)
+            const stringToSign = `from_public_id=${publicId}&timestamp=${timestamp}&to_public_id=${newPublicId}${apiSecret}`;
+            const signature = await sha1(stringToSign);
+
+            const formData = new FormData();
+            formData.append('from_public_id', publicId);
+            formData.append('to_public_id', newPublicId);
+            formData.append('api_key', apiKey);
+            formData.append('timestamp', timestamp);
+            formData.append('signature', signature);
+
+            try {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/rename`, { method: 'POST', body: formData });
+                if (response.ok) {
+                    // Pindahkan data judul dan kategori lama ke nama file yang baru agar tidak hilang
+                    if (currentConfig.sampleTitles && currentConfig.sampleTitles[publicId]) {
+                        currentConfig.sampleTitles[newPublicId] = currentConfig.sampleTitles[publicId];
+                        delete currentConfig.sampleTitles[publicId];
+                    }
+                    if (currentConfig.sampleCategories && currentConfig.sampleCategories[publicId]) {
+                        currentConfig.sampleCategories[newPublicId] = currentConfig.sampleCategories[publicId];
+                        delete currentConfig.sampleCategories[publicId];
+                    }
+
+                    // Simpan ulang semua konfigurasi dan muat ulang halaman
+                    saveSettings();
+                    setTimeout(() => renderGallery(), 1000);
+                    alert("Berhasil merename file di Cloudinary!");
+                } else throw new Error((await response.json()).error?.message || "Gagal merename");
+            } catch (error) {
+                alert("Error: " + error.message);
+                btnNode.textContent = 'Rename';
+                btnNode.disabled = false;
+            }
         }
 
         // Utility: SHA-1 Hash untuk Signature Cloudinary
@@ -572,51 +636,11 @@
 
             // Simpan ke Local Storage
             localStorage.setItem('emmaConfig', JSON.stringify(currentConfig));
-            updateExportConfig();
             
             // Tampilkan Notifikasi
             const notif = document.getElementById('notif');
             notif.classList.add('show');
             setTimeout(() => notif.classList.remove('show'), 3000);
-        }
-
-        // Generate Export Config
-        function updateExportConfig() {
-            const exportData = {
-                whatsappNumber: currentConfig.whatsappNumber || '',
-                googleDriveLink: currentConfig.googleDriveLink || '',
-                instagramLink: currentConfig.instagramLink || '',
-                cloudinaryName: currentConfig.cloudinaryName || '',
-                sampleTitles: currentConfig.sampleTitles || {},
-                sampleCategories: currentConfig.sampleCategories || {}
-            };
-            
-            const configString = `const DEFAULT_CONFIG = {\n` +
-                `    // Nomor WhatsApp (format: 628xxx)\n` +
-                `    whatsappNumber: '${exportData.whatsappNumber}',\n` +
-                `    \n` +
-                `    // Link Google Drive\n` +
-                `    googleDriveLink: '${exportData.googleDriveLink}',\n` +
-                `    \n` +
-                `    // Instagram Link\n` +
-                `    instagramLink: '${exportData.instagramLink}',\n` +
-                `    \n` +
-                `    // Pengaturan Cloudinary\n` +
-                `    cloudinaryName: '${exportData.cloudinaryName}',\n` +
-                `    \n` +
-                `    sampleTitles: ${JSON.stringify(exportData.sampleTitles, null, 4).split('\\n').join('\\n    ')},\n` +
-                `    \n` +
-                `    sampleCategories: ${JSON.stringify(exportData.sampleCategories, null, 4).split('\\n').join('\\n    ')}\n` +
-                `};`;
-                
-            document.getElementById('exportConfigArea').value = configString;
-        }
-
-        function copyExportConfig() {
-            const area = document.getElementById('exportConfigArea');
-            area.select();
-            document.execCommand('copy');
-            alert('Kode konfigurasi berhasil disalin! Buka file index.html dan timpa bagian DEFAULT_CONFIG untuk membuat perubahan ini permanen.');
         }
 
         // Inisialisasi awal
