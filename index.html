@@ -1045,9 +1045,11 @@
             sampleItems: []
         };
 
-        // Ambil konfigurasi dari Local Storage agar fitur Live Preview di laptop Anda kembali berfungsi seketika
+        // Hanya gunakan Local Storage untuk Live Preview JIKA user sudah login sebagai Admin.
+        // User biasa (atau HP yang belum login) akan dipaksa membaca data asli dari server.
         const savedConfig = localStorage.getItem('emmaConfig');
-        const parsedConfig = savedConfig ? JSON.parse(savedConfig) : {};
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
+        const parsedConfig = (savedConfig && isAdmin) ? JSON.parse(savedConfig) : {};
         const CONFIG = { ...DEFAULT_CONFIG, ...parsedConfig };
 
         // ============================================
@@ -1129,6 +1131,7 @@
             
             // GANTI PASSWORD ANDA DI SINI (Di dalam tanda kutip)
             if (password === "emma123") {
+                localStorage.setItem('isAdmin', 'true');
                 window.location.href = "admin.html";
             } else {
                 document.getElementById('loginError').style.display = 'block';
@@ -1169,7 +1172,7 @@
             // Listener agar halaman web langsung berubah (Live Update) tanpa di-refresh
             // saat ada perubahan dari Dashboard Admin
             window.addEventListener('storage', (e) => {
-                if (e.key === 'emmaConfig') {
+                if (e.key === 'emmaConfig' && localStorage.getItem('isAdmin') === 'true') {
                     const newConfig = e.newValue ? JSON.parse(e.newValue) : DEFAULT_CONFIG;
                     Object.assign(CONFIG, newConfig);
                     renderSample();
