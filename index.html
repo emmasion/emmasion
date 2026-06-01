@@ -1042,11 +1042,6 @@
             uploadPreset: 'dtlq8dnh',
             cloudinaryApiKey: '',
             cloudinaryApiSecret: '',
-            githubRepo: 'emmasion/emmasion',
-            githubToken: '',
-
-            // Sample Artworks (cukup masukkan nama file gambar yang diunggah ke Cloudinary)
-            sampleItems: []
         };
 
         // Hanya gunakan Local Storage untuk Live Preview JIKA user sudah login sebagai Admin.
@@ -1060,31 +1055,33 @@
         // 🎨 RENDER FUNCTIONS
         // ============================================
 
-        // Render Sample Grid
-        function renderSample() {
+        // Fetch Gambar Otomatis dari Cloudinary
+        async function renderSample() {
             const grid = document.getElementById('sampleGrid');
-            grid.innerHTML = CONFIG.sampleItems.map(item => {
-                if (item.image) {
-                    const imageUrl = `https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/upload/f_auto,q_auto/${item.image}`;
+            if (!CONFIG.cloudinaryName) return;
+            
+            try {
+                // Mengambil daftar gambar yang memiliki tag 'emmasion_gallery'
+                const response = await fetch(`https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/list/emmasion_gallery.json?t=${Date.now()}`);
+                if (!response.ok) throw new Error('List tidak ditemukan');
+                const data = await response.json();
+                
+                grid.innerHTML = data.resources.map(res => {
+                    const imageUrl = `https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/upload/f_auto,q_auto/${res.public_id}.${res.format}`;
                     return `
                         <div class="sample-item" style="background: none; padding: 0;">
                             <img src="${imageUrl}" alt="${item.title}">
                             <div class="sample-overlay">
-                                <div class="sample-title">${item.title}</div>
-                                <div class="sample-category">${item.category}</div>
+                                <div class="sample-title">Custom Commission</div>
+                                <div class="sample-category">Digital Art</div>
                             </div>
                         </div>
                     `;
-                } else {
-                    return `
-                        <div class="sample-item">
-                            <div class="sample-placeholder">${item.icon}</div>
-                            <div class="sample-title">${item.title}</div>
-                            <div class="sample-category">${item.category}</div>
-                        </div>
-                    `;
-                }
-            }).join('');
+                }).join('');
+            } catch (error) {
+                console.log("Gallery fetch error:", error);
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">Belum ada gambar, atau pengaturan "Resource list" belum diizinkan di Cloudinary.</p>';
+            }
         }
 
         // Update Instagram Link

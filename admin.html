@@ -308,27 +308,18 @@
             </div>
         </div>
 
-        <!-- Pengaturan Publikasi -->
-        <div class="card">
-            <div class="card-header" style="color: #10b981;">🚀 Auto-Publish ke Live Website</div>
-            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Otomatis perbarui website publik Anda tanpa perlu membuka terminal atau menjalankan git push manual.</p>
-            <div class="settings-grid">
-                <div class="form-group">
-                    <label>GitHub Repository <small>(contoh: emmasion/emmasion)</small></label>
-                    <input type="text" id="githubRepo" placeholder="username/repository">
-                </div>
-                <div class="form-group">
-                    <label>GitHub Token <small>(Wajib)</small></label>
-                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
-                </div>
-            </div>
-            <button class="btn btn-add" style="width: 100%; margin-top: 0.5rem; padding: 1rem; font-size: 0.9rem;" onclick="publishToGitHub(this)">🌐 Publikasikan Perubahan ke Live Website</button>
-        </div>
 
         <!-- Pengaturan Galeri -->
         <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
             <div class="card-header">Manajemen Galeri / Sample</div>
-            <button class="btn btn-add" onclick="addSample()">+ Tambah Karya Baru</button>
+            <div style="background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
+                <label style="display:block; margin-bottom: 0.5rem; font-weight: 600;">Upload Karya Baru (Otomatis masuk ke web)</label>
+                <div style="display: flex; gap: 1rem;">
+                    <input type="file" id="newImageUpload" accept="image/*" style="display: none;" onchange="uploadNewImage(this)">
+                    <button class="btn btn-add" style="margin-top: 0;" onclick="document.getElementById('newImageUpload').click()">Pilih Gambar & Upload</button>
+                    <span id="mainUploadStatus" style="align-self: center; font-size: 0.85rem; font-weight: 600;"></span>
+                </div>
+            </div>
             <div id="galleryContainer" class="gallery-grid"></div>
         </div>
     </div>
@@ -345,9 +336,6 @@
             uploadPreset: 'dtlq8dnh',
             cloudinaryApiKey: '',
             cloudinaryApiSecret: '',
-            githubRepo: 'emmasion/emmasion',
-            githubToken: '',
-            sampleItems: []
         };
 
         let currentConfig = {};
@@ -366,85 +354,39 @@
             document.getElementById('uploadPreset').value = currentConfig.uploadPreset || '';
             document.getElementById('cloudinaryApiKey').value = currentConfig.cloudinaryApiKey || '';
             document.getElementById('cloudinaryApiSecret').value = currentConfig.cloudinaryApiSecret || '';
-            document.getElementById('githubRepo').value = currentConfig.githubRepo || 'emmasion/emmasion';
-            document.getElementById('githubToken').value = currentConfig.githubToken || '';
             
             renderGallery();
         }
 
-        // Sinkronisasi data dari DOM ke Variabel agar ketikan tidak hilang saat render ulang
-        function syncDOMToConfig() {
-            const galleryItems = [];
-            const nodes = document.querySelectorAll('.sample-item-edit');
-            if(nodes.length === 0) return;
-            
-            nodes.forEach(node => {
-                galleryItems.push({
-                    title: node.querySelector('.g-title').value,
-                    category: node.querySelector('.g-category').value,
-                    image: node.querySelector('.g-image').value
-                });
-            });
-            currentConfig.sampleItems = galleryItems;
-        }
-
-        // Render Gallery Form
-        function renderGallery() {
+        // Render Gallery Dinamis dari Cloudinary List
+        async function renderGallery() {
             const container = document.getElementById('galleryContainer');
             const cloudName = document.getElementById('cloudinary').value || currentConfig.cloudinaryName;
             
-            container.innerHTML = currentConfig.sampleItems.map((item, index) => {
-                const imgSrc = item.image && cloudName ? `https://res.cloudinary.com/${cloudName}/image/upload/w_400,h_300,c_fill,f_auto/${item.image}` : '';
-                const isFirst = index === 0;
-                const isLast = index === currentConfig.sampleItems.length - 1;
-                
-                return `
-                    <div class="sample-item-edit" id="sample-${index}">
-                        <div class="sample-preview-container">
-                            <img src="${imgSrc}" style="display: ${imgSrc ? 'block' : 'none'}" class="preview-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                            <div class="no-image-text" style="display: ${imgSrc ? 'none' : 'block'}; color: #94a3b8; font-size: 0.85rem; font-weight: 600;">Belum Ada Gambar</div>
-                            <div class="sample-actions">
-                                <button class="btn btn-danger" style="padding: 0.35rem 0.65rem;" onclick="moveItem(${index}, -1)" ${isFirst ? 'disabled style="opacity:0.5"' : ''} title="Geser ke Kiri">◀</button>
-                                <button class="btn btn-danger" style="padding: 0.35rem 0.65rem;" onclick="moveItem(${index}, 1)" ${isLast ? 'disabled style="opacity:0.5"' : ''} title="Geser ke Kanan">▶</button>
-                                <button class="btn btn-danger" style="padding: 0.35rem 0.65rem; background: #334155;" onclick="deleteSample(${index})" title="Hapus Karya">✖</button>
-                            </div>
-                        </div>
-                        
-                        <div class="sample-details">
-                            <div class="form-group">
-                                <label>Judul Karya #${index + 1}</label>
-                                <input type="text" class="g-title" value="${item.title || ''}" onchange="saveSettings()">
-                            </div>
-                            <div class="form-group">
-                                <label>Kategori</label>
-                                <input type="text" class="g-category" value="${item.category || ''}" onchange="saveSettings()">
-                            </div>
-                            <div class="form-group">
-                                <label>File Gambar (Cloudinary ID)</label>
-                                <div class="upload-action-group" style="display: flex; gap: 0.5rem; align-items: center;">
-                                    <input type="text" class="g-image readonly" value="${item.image || ''}" placeholder="Belum ada" readonly>
-                                    <input type="file" accept="image/*" style="display: none;" onchange="uploadImage(this)">
-                                    <button type="button" class="btn" style="flex: 1; padding: 0.75rem;" onclick="this.previousElementSibling.click()">Ganti</button>
-                                    <button type="button" class="btn btn-danger" style="flex: 1; padding: 0.75rem; display: ${item.image ? 'block' : 'none'};" onclick="removeImage(${index}, this)">Hapus</button>
-                                </div>
-                                <span class="upload-status" style="font-size: 0.75rem; margin-top: 0.5rem; display: none;"></span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+            if (!cloudName) return;
+            container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #94a3b8;">Loading galeri...</div>';
 
-        // Tambah Item Baru
-        function addSample() {
-            syncDOMToConfig();
-            currentConfig.sampleItems.unshift({ // Tambah di paling awal
-                title: 'Judul Baru',
-                category: 'Kategori',
-                image: ''
-            });
-            renderGallery();
-            saveSettings();
+            try {
+                const response = await fetch(`https://res.cloudinary.com/${cloudName}/image/list/emmasion_gallery.json?t=${Date.now()}`);
+                if (!response.ok) throw new Error('List tidak ditemukan');
+                const data = await response.json();
+                
+                container.innerHTML = data.resources.map(res => {
+                    const imgSrc = `https://res.cloudinary.com/${cloudName}/image/upload/w_400,h_300,c_fill,f_auto/${res.public_id}.${res.format}`;
+                    return `
+                        <div class="sample-item-edit">
+                            <div class="sample-preview-container" style="height: 150px;">
+                                <img src="${imgSrc}" style="display: block" class="preview-img">
+                                <div class="sample-actions">
+                                    <button class="btn btn-danger" style="padding: 0.5rem; background: #ef4444;" onclick="removeImage('${res.public_id}', this)" title="Hapus Gambar">Hapus Permanen</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ef4444;">Belum ada gambar, atau Anda belum mematikan centang "Resource list" di pengaturan Security Cloudinary.</div>';
+            }
         }
 
         // Utility: SHA-1 Hash untuk Signature Cloudinary
@@ -485,56 +427,21 @@
             } catch (error) { console.error('Delete error:', error); }
         }
 
-        // Hapus Item
-        async function deleteSample(index) {
-            if(confirm('Yakin ingin menghapus karya ini? Jika ada gambar, akan dihapus permanen dari server Cloudinary!')) {
-                syncDOMToConfig();
-                const item = currentConfig.sampleItems[index];
-                if (item.image) {
-                    const btn = document.querySelector(`#sample-${index} .sample-actions .btn-danger:last-child`);
-                    if(btn) btn.textContent = '⏳';
-                    await deleteFromCloudinary(item.image);
-                }
-                currentConfig.sampleItems.splice(index, 1);
-                renderGallery();
-                saveSettings();
-            }
-        }
-
         // Hapus File Gambar Saja
-        async function removeImage(index, btnNode) {
+        async function removeImage(publicId, btnNode) {
             if(!confirm('Hapus file gambar ini permanen dari Cloudinary?')) return;
-            syncDOMToConfig();
-            const item = currentConfig.sampleItems[index];
-            if (item.image) {
-                btnNode.textContent = '⏳ Menghapus...';
-                btnNode.disabled = true;
-                await deleteFromCloudinary(item.image);
-                currentConfig.sampleItems[index].image = '';
-                renderGallery();
-                saveSettings();
-            }
-        }
-
-        // Geser Urutan (Reorder)
-        function moveItem(index, direction) {
-            syncDOMToConfig();
-            if (index + direction < 0 || index + direction >= currentConfig.sampleItems.length) return;
-            
-            const temp = currentConfig.sampleItems[index];
-            currentConfig.sampleItems[index] = currentConfig.sampleItems[index + direction];
-            currentConfig.sampleItems[index + direction] = temp;
-            
-            renderGallery();
-            saveSettings();
+            btnNode.textContent = '⏳ Menghapus...';
+            btnNode.disabled = true;
+            await deleteFromCloudinary(publicId);
+            setTimeout(() => renderGallery(), 1000); // Render ulang galeri setelah dihapus
         }
         
         function resetSettings() {
             if(confirm('Yakin reset semua ke awal?')) { localStorage.removeItem('emmaConfig'); location.reload(); }
         }
 
-        // Fungsi Upload langsung ke Cloudinary
-        async function uploadImage(fileInput) {
+        // Fungsi Upload Baru langsung ke Cloudinary dengan Tag
+        async function uploadNewImage(fileInput) {
             const file = fileInput.files[0];
             if (!file) return;
 
@@ -547,8 +454,7 @@
                 return;
             }
 
-            const statusSpan = fileInput.parentElement.nextElementSibling;
-            const textInput = fileInput.previousElementSibling;
+            const statusSpan = document.getElementById('mainUploadStatus');
             
             statusSpan.style.display = 'block';
             statusSpan.style.color = '#ec4899';
@@ -557,28 +463,17 @@
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', uploadPreset);
+            formData.append('tags', 'emmasion_gallery'); // WAJIB: Tambahkan tag agar terbaca oleh web
 
             try {
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData });
                 const data = await response.json();
                 
                 if (response.ok && data.secure_url) {
-                    textInput.value = data.public_id + '.' + data.format;
                     statusSpan.textContent = '✅ Upload berhasil!';
                     statusSpan.style.color = '#10b981';
                     
-                    // Update Preview Gambar Langsung dari Cloudinary
-                    const previewImg = textInput.closest('.sample-item-edit').querySelector('.preview-img');
-                    if(previewImg) {
-                        previewImg.src = data.secure_url;
-                        previewImg.style.display = 'block';
-                        
-                        const noImgText = textInput.closest('.sample-item-edit').querySelector('.no-image-text');
-                        if(noImgText) noImgText.style.display = 'none';
-                    }
-
-                    // Otomatis simpan pengaturan setelah upload berhasil
-                    saveSettings();
+                    renderGallery(); // Render ulang galeri agar gambar baru muncul
 
                     setTimeout(() => statusSpan.style.display = 'none', 3000);
                 } else throw new Error(data.error?.message || 'Upload gagal');
@@ -598,10 +493,6 @@
             currentConfig.uploadPreset = document.getElementById('uploadPreset').value;
             currentConfig.cloudinaryApiKey = document.getElementById('cloudinaryApiKey').value;
             currentConfig.cloudinaryApiSecret = document.getElementById('cloudinaryApiSecret').value;
-            currentConfig.githubRepo = document.getElementById('githubRepo').value;
-            currentConfig.githubToken = document.getElementById('githubToken').value;
-
-            syncDOMToConfig(); // Pastikan data terbaru dari input diambil
 
             // Simpan ke Local Storage
             localStorage.setItem('emmaConfig', JSON.stringify(currentConfig));
@@ -610,53 +501,6 @@
             const notif = document.getElementById('notif');
             notif.classList.add('show');
             setTimeout(() => notif.classList.remove('show'), 3000);
-        }
-
-        // Fungsi Auto-Publish ke GitHub
-        async function publishToGitHub(btn) {
-            saveSettings(); // Simpan perubahan lokal
-            
-            const repo = document.getElementById('githubRepo').value;
-            const token = document.getElementById('githubToken').value;
-            
-            if (!repo || !token) {
-                alert("GitHub Repository dan Token harus diisi untuk publikasi otomatis!");
-                return;
-            }
-
-            btn.textContent = "⏳ Mempublikasikan... (Tunggu sebentar)";
-            btn.disabled = true;
-
-            try {
-                const configToPublish = JSON.parse(JSON.stringify(currentConfig));
-                configToPublish.githubToken = ''; // Hapus token agar tidak bocor ke publik
-                configToPublish.cloudinaryApiKey = '';
-                configToPublish.cloudinaryApiSecret = '';
-
-                const newConfigString = `const DEFAULT_CONFIG = ${JSON.stringify(configToPublish, null, 12)};`;
-                const regex = /const DEFAULT_CONFIG = \{[\s\S]*?\};/;
-
-                const files = ['index.html', 'admin.html'];
-                for (const file of files) {
-                    const res = await fetch(`https://api.github.com/repos/${repo}/contents/${file}`, {
-                        headers: { 'Authorization': `token ${token}` }
-                    });
-                    if (!res.ok) throw new Error("Gagal akses repo. Periksa nama Repo dan Token.");
-                    
-                    const data = await res.json();
-                    const content = decodeURIComponent(escape(atob(data.content)));
-                    if (!regex.test(content)) continue;
-                    
-                    const newContent = content.replace(regex, newConfigString);
-                    await fetch(`https://api.github.com/repos/${repo}/contents/${file}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: `Auto-sync: Update ${file} via Admin Dashboard`, content: btoa(unescape(encodeURIComponent(newContent))), sha: data.sha })
-                    });
-                }
-                alert("✅ PUBLIKASI BERHASIL! \nWebsite Anda telah diupdate. Buka web di HP Anda dan refresh dalam 1-3 menit.");
-            } catch (error) { alert("❌ Gagal publikasi: " + error.message); } 
-            finally { btn.textContent = "🌐 Publikasikan Perubahan ke Live Website"; btn.disabled = false; }
         }
 
         // Inisialisasi awal
