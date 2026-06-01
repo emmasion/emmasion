@@ -1045,10 +1045,8 @@
             sampleItems: []
         };
 
-        // Ambil konfigurasi dari Local Storage dan gabungkan dengan default agar data baru tidak hilang
-        const savedConfig = localStorage.getItem('emmaConfig');
-        const parsedConfig = savedConfig ? JSON.parse(savedConfig) : {};
-        const CONFIG = { ...DEFAULT_CONFIG, ...parsedConfig };
+        // Website publik SEKARANG SELALU mengambil data dari Server/GitHub agar 100% sinkron antar user.
+        const CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
         // ============================================
         // 🎨 RENDER FUNCTIONS
