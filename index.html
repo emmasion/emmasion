@@ -1037,11 +1037,10 @@
             instagramLink: 'https://www.instagram.com/wuupii.ayy',
             
             // Pengaturan Cloudinary
-            // Ganti tulisan di bawah ini dengan Cloud Name Anda (CUKUP SEKALI SAJA)
             cloudinaryName: 'dsnion1vf',
-            uploadPreset: 'dtlq8dnh',
-            cloudinaryApiKey: '',
-            cloudinaryApiSecret: '',
+            
+            // Catatan: uploadPreset, apiKey, dan apiSecret sengaja DIHAPUS dari sini 
+            // demi keamanan. Pengaturan rahasia tersebut HANYA ada di admin.html.
         };
 
         // Hanya gunakan Local Storage untuk Live Preview JIKA user sudah login sebagai Admin.
@@ -1062,7 +1061,7 @@
             
             try {
                 // Mengambil daftar gambar yang memiliki tag 'emmasion_gallery'
-                const response = await fetch(`https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/list/emmasion_gallery.json?t=${Date.now()}`);
+                const response = await fetch(`https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/list/v${Date.now()}/emmasion_gallery.json`);
                 if (!response.ok) throw new Error('List tidak ditemukan');
                 const data = await response.json();
                 
@@ -1070,7 +1069,7 @@
                     const imageUrl = `https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/upload/f_auto,q_auto/${res.public_id}.${res.format}`;
                     return `
                         <div class="sample-item" style="background: none; padding: 0;">
-                            <img src="${imageUrl}" alt="${item.title}">
+                            <img src="${imageUrl}" alt="Artwork">
                             <div class="sample-overlay">
                                 <div class="sample-title">Custom Commission</div>
                                 <div class="sample-category">Digital Art</div>

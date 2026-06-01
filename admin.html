@@ -367,7 +367,7 @@
             container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #94a3b8;">Loading galeri...</div>';
 
             try {
-                const response = await fetch(`https://res.cloudinary.com/${cloudName}/image/list/emmasion_gallery.json?t=${Date.now()}`);
+                const response = await fetch(`https://res.cloudinary.com/${cloudName}/image/list/v${Date.now()}/emmasion_gallery.json`);
                 if (!response.ok) throw new Error('List tidak ditemukan');
                 const data = await response.json();
                 
