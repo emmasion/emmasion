@@ -1045,8 +1045,10 @@
             sampleItems: []
         };
 
-        // Website publik SEKARANG SELALU mengambil data dari Server/GitHub agar 100% sinkron antar user.
-        const CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        // Ambil konfigurasi dari Local Storage agar fitur Live Preview di laptop Anda kembali berfungsi seketika
+        const savedConfig = localStorage.getItem('emmaConfig');
+        const parsedConfig = savedConfig ? JSON.parse(savedConfig) : {};
+        const CONFIG = { ...DEFAULT_CONFIG, ...parsedConfig };
 
         // ============================================
         // 🎨 RENDER FUNCTIONS
