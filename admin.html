@@ -308,6 +308,23 @@
             </div>
         </div>
 
+        <!-- Pengaturan Publikasi -->
+        <div class="card">
+            <div class="card-header" style="color: #10b981;">🚀 Auto-Publish ke Live Website</div>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Otomatis perbarui website publik Anda tanpa perlu membuka terminal atau menjalankan git push manual.</p>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>GitHub Repository <small>(contoh: emmasion/emmasion)</small></label>
+                    <input type="text" id="githubRepo" placeholder="username/repository">
+                </div>
+                <div class="form-group">
+                    <label>GitHub Token <small>(Wajib)</small></label>
+                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
+                </div>
+            </div>
+            <button class="btn btn-add" style="width: 100%; margin-top: 0.5rem; padding: 1rem; font-size: 0.9rem;" onclick="publishToGitHub(this)">🌐 Publikasikan Perubahan ke Live Website</button>
+        </div>
+
         <!-- Pengaturan Galeri -->
         <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
             <div class="card-header">Manajemen Galeri / Sample</div>
@@ -328,6 +345,8 @@
             uploadPreset: 'dtlq8dnh',
             cloudinaryApiKey: '',
             cloudinaryApiSecret: '',
+            githubRepo: 'emmasion/emmasion',
+            githubToken: '',
             sampleItems: [
                 { title: 'Elegant Female Portrait', category: 'Character', image: 'sample1.jpg' },
                 { title: 'Romantic Couple Portrait', category: 'Portrait', image: 'sample2.jpg' },
@@ -356,6 +375,8 @@
             document.getElementById('uploadPreset').value = currentConfig.uploadPreset || '';
             document.getElementById('cloudinaryApiKey').value = currentConfig.cloudinaryApiKey || '';
             document.getElementById('cloudinaryApiSecret').value = currentConfig.cloudinaryApiSecret || '';
+            document.getElementById('githubRepo').value = currentConfig.githubRepo || 'emmasion/emmasion';
+            document.getElementById('githubToken').value = currentConfig.githubToken || '';
             
             renderGallery();
         }
@@ -586,6 +607,8 @@
             currentConfig.uploadPreset = document.getElementById('uploadPreset').value;
             currentConfig.cloudinaryApiKey = document.getElementById('cloudinaryApiKey').value;
             currentConfig.cloudinaryApiSecret = document.getElementById('cloudinaryApiSecret').value;
+            currentConfig.githubRepo = document.getElementById('githubRepo').value;
+            currentConfig.githubToken = document.getElementById('githubToken').value;
 
             syncDOMToConfig(); // Pastikan data terbaru dari input diambil
 
@@ -596,6 +619,53 @@
             const notif = document.getElementById('notif');
             notif.classList.add('show');
             setTimeout(() => notif.classList.remove('show'), 3000);
+        }
+
+        // Fungsi Auto-Publish ke GitHub
+        async function publishToGitHub(btn) {
+            saveSettings(); // Simpan perubahan lokal
+            
+            const repo = document.getElementById('githubRepo').value;
+            const token = document.getElementById('githubToken').value;
+            
+            if (!repo || !token) {
+                alert("GitHub Repository dan Token harus diisi untuk publikasi otomatis!");
+                return;
+            }
+
+            btn.textContent = "⏳ Mempublikasikan... (Tunggu sebentar)";
+            btn.disabled = true;
+
+            try {
+                const configToPublish = JSON.parse(JSON.stringify(currentConfig));
+                configToPublish.githubToken = ''; // Hapus token agar tidak bocor ke publik
+                configToPublish.cloudinaryApiKey = '';
+                configToPublish.cloudinaryApiSecret = '';
+
+                const newConfigString = `const DEFAULT_CONFIG = ${JSON.stringify(configToPublish, null, 12)};`;
+                const regex = /const DEFAULT_CONFIG = \{[\s\S]*?\};/;
+
+                const files = ['index.html', 'admin.html'];
+                for (const file of files) {
+                    const res = await fetch(`https://api.github.com/repos/${repo}/contents/${file}`, {
+                        headers: { 'Authorization': `token ${token}` }
+                    });
+                    if (!res.ok) throw new Error("Gagal akses repo. Periksa nama Repo dan Token.");
+                    
+                    const data = await res.json();
+                    const content = decodeURIComponent(escape(atob(data.content)));
+                    if (!regex.test(content)) continue;
+                    
+                    const newContent = content.replace(regex, newConfigString);
+                    await fetch(`https://api.github.com/repos/${repo}/contents/${file}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Auto-sync: Update ${file} via Admin Dashboard`, content: btoa(unescape(encodeURIComponent(newContent))), sha: data.sha })
+                    });
+                }
+                alert("✅ PUBLIKASI BERHASIL! \nWebsite Anda telah diupdate. Buka web di HP Anda dan refresh dalam 1-3 menit.");
+            } catch (error) { alert("❌ Gagal publikasi: " + error.message); } 
+            finally { btn.textContent = "🌐 Publikasikan Perubahan ke Live Website"; btn.disabled = false; }
         }
 
         // Inisialisasi awal
