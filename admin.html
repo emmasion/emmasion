@@ -5,6 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Emma Commission</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Cek apakah perangkat ini sedang dalam masa hukuman blokir
+        // ATAU cek apakah mereka masuk ke admin.html tanpa login
+        const blockTime = localStorage.getItem('maliciousBlockUntil');
+        
+        if (localStorage.getItem('isAdmin') !== 'true') {
+            // Jika belum login, langsung tembak hukuman 24 jam!
+            localStorage.setItem('maliciousBlockUntil', Date.now() + 86400000);
+            alert("[CRITICAL SECURITY ALERT]\n\nAkses ilegal terdeteksi.\nSistem sedang merekam jejak digital Anda.\n\nPerangkat diblokir 24 Jam.");
+            showHackerScreen(1440);
+        } else if (blockTime && Date.now() < parseInt(blockTime)) {
+            // Jika masuk tapi masih dalam masa hukuman
+            showHackerScreen(Math.ceil((parseInt(blockTime) - Date.now()) / 60000));
+        } else if (blockTime) {
+            localStorage.removeItem('maliciousBlockUntil');
+        }
+
+        function showHackerScreen(remainingMins) {
+            const remainingHours = (remainingMins / 60).toFixed(1);
+            const ua = navigator.userAgent;
+            const plat = navigator.platform;
+            const res = screen.width + 'x' + screen.height;
+            
+            document.write('<style>body > *:not(#hacker-screen) { display: none !important; } body { background: #050505 !important; }</style>');
+            
+            window.addEventListener('DOMContentLoaded', () => {
+                const div = document.createElement('div');
+                div.id = 'hacker-screen';
+                div.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#050505;color:#00ff00;display:flex;align-items:center;justify-content:center;z-index:999999999;text-align:left;padding:2rem;font-family:"Courier New", monospace;box-sizing:border-box;';
+                div.innerHTML = `<div style="border: 2px solid #ff0000; padding: 2rem; max-width: 600px; background: rgba(255,0,0,0.05); box-shadow: 0 0 30px rgba(255,0,0,0.2);"><h1 style="color:#ff0000;font-size:2rem;margin-bottom:1rem;text-align:center;text-transform:uppercase;letter-spacing:2px;">SECURITY BREACH BLOCKED</h1><p style="font-size:1.1rem;margin-bottom:1rem;color:#ff3333;text-align:center;">UNAUTHORIZED ACCESS DETECTED (CODE: 403 FORBIDDEN)</p><p style="margin-bottom:1.5rem;text-align:center;color:#ccc;">Perangkat Anda telah diblokir dari server ini selama <strong>24 JAM</strong>.</p><div style="background:#000;border:1px solid #333;padding:1rem;margin-bottom:1.5rem;font-size:0.85rem;line-height:1.5;word-wrap:break-word;"><span style="color:#aaa;">> SYSTEM SCAN INITIATED...</span><br><span style="color:#aaa;">> GATHERING DIGITAL FOOTPRINT...</span><br><br><span style="color:#00ff00;">OS/BROWSER:</span> ${ua}<br><span style="color:#00ff00;">PLATFORM:</span> ${plat}<br><span style="color:#00ff00;">RESOLUTION:</span> ${res}<br><br><span style="color:#ff0000;font-weight:bold;">[!] WARNING: IP Address dan jejak digital Anda telah terekam otomatis di log keamanan server. Tindakan peretasan lebih lanjut akan dilaporkan ke ISP/Pihak Berwajib.</span></div><p style="text-align:center;font-size:0.9rem;color:#888;">Sisa waktu blokir: <span style="color:#fff;">${remainingHours} Jam</span> (${remainingMins} menit)</p></div>`;
+                document.body.appendChild(div);
+                document.body.style.overflow = 'hidden';
+                
+                let clicks = 0;
+                div.addEventListener('click', () => {
+                    clicks++;
+                    if(clicks >= 5) {
+                        localStorage.removeItem('maliciousBlockUntil');
+                        window.location.href = 'index.html';
+                    }
+                });
+                window.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
+                        localStorage.removeItem('maliciousBlockUntil');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+    </script>
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -423,13 +473,6 @@
     </div>
 
     <script>
-        // Cek apakah pengunjung sudah login melalui popup di index.html
-        // Jika tidak ada tanda 'isAdmin', tendang kembali ke halaman utama
-        if (localStorage.getItem('isAdmin') !== 'true') {
-            alert("Akses Ditolak! Silakan login melalui halaman utama.");
-            window.location.replace("index.html");
-        }
-
         // Default Config jika kosong
         const DEFAULT_CONFIG = {
             whatsappNumber: '6281235071498',
@@ -445,6 +488,12 @@
         };
 
         let currentConfig = {};
+
+        // Utility: Escape HTML (XSS Prevention)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+        }
 
         // Load Data dari LocalStorage
         function loadData() {
@@ -480,8 +529,8 @@
                 // Siapkan opsi untuk Dropdown Peringkat
                 const optionsHTML = '<option value="">-- Pilih otomatis terbaru --</option>' + data.resources.map(res => {
                     const defaultTitle = res.public_id.split('/').pop().replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-                    const title = (currentConfig.sampleTitles && currentConfig.sampleTitles[res.public_id]) ? currentConfig.sampleTitles[res.public_id] : defaultTitle;
-                    return `<option value="${res.public_id}">${title}</option>`;
+                    const title = escapeHTML((currentConfig.sampleTitles && currentConfig.sampleTitles[res.public_id]) ? currentConfig.sampleTitles[res.public_id] : defaultTitle);
+                    return `<option value="${res.public_id}">${title}</option>`; // Title disanitasi sebelum dimasukkan ke opsi
                 }).join('');
                 
                 // Masukkan opsi ke masing-masing select
@@ -497,8 +546,8 @@
                     const imgSrc = `https://res.cloudinary.com/${cloudName}/image/upload/w_400,h_300,c_fill,f_auto/${res.public_id}.${res.format}`;
                     
                     const defaultTitle = res.public_id.split('/').pop().replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-                    const currentTitle = (currentConfig.sampleTitles && currentConfig.sampleTitles[res.public_id]) ? currentConfig.sampleTitles[res.public_id] : defaultTitle;
-                    const currentCategory = (currentConfig.sampleCategories && currentConfig.sampleCategories[res.public_id]) ? currentConfig.sampleCategories[res.public_id] : 'Digital Art';
+                    const currentTitle = escapeHTML((currentConfig.sampleTitles && currentConfig.sampleTitles[res.public_id]) ? currentConfig.sampleTitles[res.public_id] : defaultTitle);
+                    const currentCategory = escapeHTML((currentConfig.sampleCategories && currentConfig.sampleCategories[res.public_id]) ? currentConfig.sampleCategories[res.public_id] : 'Digital Art');
                     
                     return `
                         <div class="sample-item-edit">

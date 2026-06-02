@@ -5,6 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms of Service - Emma Commission</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        // Sistem Keamanan Global: Cek Status Blokir 1 Jam
+        const blockTime = localStorage.getItem('maliciousBlockUntil');
+        if (blockTime && Date.now() < parseInt(blockTime)) {
+            const remainingMins = Math.ceil((parseInt(blockTime) - Date.now()) / 60000);
+            const remainingHours = (remainingMins / 60).toFixed(1);
+            const ua = navigator.userAgent;
+            const plat = navigator.platform;
+            const res = screen.width + 'x' + screen.height;
+            
+            document.write('<style>body > *:not(#hacker-screen) { display: none !important; } body { background: #050505 !important; }</style>');
+            
+            window.addEventListener('DOMContentLoaded', () => {
+                const div = document.createElement('div');
+                div.id = 'hacker-screen';
+                div.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#050505;color:#00ff00;display:flex;align-items:center;justify-content:center;z-index:999999999;text-align:left;padding:2rem;font-family:"Courier New", monospace;box-sizing:border-box;';
+                div.innerHTML = `<div style="border: 2px solid #ff0000; padding: 2rem; max-width: 600px; background: rgba(255,0,0,0.05); box-shadow: 0 0 30px rgba(255,0,0,0.2);"><h1 style="color:#ff0000;font-size:2rem;margin-bottom:1rem;text-align:center;text-transform:uppercase;letter-spacing:2px;">SECURITY BREACH BLOCKED</h1><p style="font-size:1.1rem;margin-bottom:1rem;color:#ff3333;text-align:center;">UNAUTHORIZED ACCESS DETECTED (CODE: 403 FORBIDDEN)</p><p style="margin-bottom:1.5rem;text-align:center;color:#ccc;">Perangkat Anda telah diblokir dari server ini selama <strong>24 JAM</strong>.</p><div style="background:#000;border:1px solid #333;padding:1rem;margin-bottom:1.5rem;font-size:0.85rem;line-height:1.5;word-wrap:break-word;"><span style="color:#aaa;">> SYSTEM SCAN INITIATED...</span><br><span style="color:#aaa;">> GATHERING DIGITAL FOOTPRINT...</span><br><br><span style="color:#00ff00;">OS/BROWSER:</span> ${ua}<br><span style="color:#00ff00;">PLATFORM:</span> ${plat}<br><span style="color:#00ff00;">RESOLUTION:</span> ${res}<br><br><span style="color:#ff0000;font-weight:bold;">[!] WARNING: IP Address dan jejak digital Anda telah terekam otomatis di log keamanan server. Tindakan peretasan lebih lanjut akan dilaporkan ke ISP/Pihak Berwajib.</span></div><p style="text-align:center;font-size:0.9rem;color:#888;">Sisa waktu blokir: <span style="color:#fff;">${remainingHours} Jam</span> (${remainingMins} menit)</p></div>`;
+                document.body.appendChild(div);
+                document.body.style.overflow = 'hidden';
+                
+                let clicks = 0;
+                div.addEventListener('click', () => {
+                    clicks++;
+                    if(clicks >= 5) {
+                        localStorage.removeItem('maliciousBlockUntil');
+                        window.location.reload();
+                    }
+                });
+                window.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
+                        localStorage.removeItem('maliciousBlockUntil');
+                        window.location.reload();
+                    }
+                });
+            });
+        } else if (blockTime) {
+            localStorage.removeItem('maliciousBlockUntil'); // Buka blokir otomatis jika waktu habis
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -12,9 +51,11 @@
             box-sizing: border-box;
         }
         html { 
-            scroll-behavior: smooth; 
             /* Memberi jarak ekstra agar saat klik menu Order Now, judulnya tidak tertutup */
             scroll-padding-top: 110px;
+        }
+        html.smooth-scroll {
+            scroll-behavior: smooth;
         }
         
         body {
@@ -656,6 +697,12 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Utility: Escape HTML (XSS Prevention)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+        }
+
         // Render Top Artworks
         async function renderTopArtworks() {
             if (!CONFIG.cloudinaryName) return;
@@ -695,7 +742,7 @@
                         const rank = ranks[index];
                         const imageUrl = `https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/upload/f_auto,q_auto/${res.public_id}.${res.format}`;
                         const defaultTitle = res.public_id.split('/').pop().replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-                        const titleName = (CONFIG.sampleTitles && CONFIG.sampleTitles[res.public_id]) ? CONFIG.sampleTitles[res.public_id] : defaultTitle;
+                        const titleName = escapeHTML((CONFIG.sampleTitles && CONFIG.sampleTitles[res.public_id]) ? CONFIG.sampleTitles[res.public_id] : defaultTitle);
                         const emojis = ["🥇", "🥈", "🥉"];
                         return `
                             <div class="podium-item rank-${rank}">
@@ -709,10 +756,13 @@
                     
                     // Perbaiki posisi scroll jika ada hash di URL (#contact) setelah Hall of Fame memakan tempat di layar
                     if (window.location.hash) {
-                        setTimeout(() => {
+                        requestAnimationFrame(() => {
                             const target = document.querySelector(window.location.hash);
-                            if (target) target.scrollIntoView({ behavior: 'smooth' });
-                        }, 250);
+                            if (target) {
+                                const y = target.getBoundingClientRect().top + window.scrollY - 110;
+                                window.scrollTo({ top: y, behavior: 'auto' }); // Lompat instan
+                            }
+                        });
                     }
                 }
             } catch (error) { console.error("Error fetching top artworks:", error); }
@@ -720,7 +770,13 @@
 
 
         // Config & WhatsApp Submission Logic
-        const DEFAULT_CONFIG = { whatsappNumber: '6281235071498', topArtworks: {} };
+        const DEFAULT_CONFIG = { 
+            whatsappNumber: '6281235071498', 
+            cloudinaryName: 'dsnion1vf',
+            sampleTitles: {},
+            sampleCategories: {},
+            topArtworks: {} 
+        };
         const savedConfig = localStorage.getItem('emmaConfig');
         const isAdmin = localStorage.getItem('isAdmin') === 'true';
         const parsedConfig = (savedConfig && isAdmin) ? JSON.parse(savedConfig) : {};
