@@ -18,6 +18,8 @@
 
         html {
             scroll-behavior: smooth;
+            /* Memberi jarak ekstra agar saat klik menu, judulnya tidak tertutup Navbar */
+            scroll-padding-top: 110px; 
         }
 
         body {
@@ -35,27 +37,35 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
             z-index: 1000;
-            padding: 1rem 0;
-            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.08);
-            transition: all 0.3s ease;
+            padding: 1.25rem 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         nav.scrolled {
             padding: 0.75rem 0;
-            background: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.15);
         }
 
         .nav-container {
             max-width: 1200px;
+            width: 95%;
             margin: 0 auto;
-            padding: 0 1.5rem;
+            padding: 1rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.4s ease;
+        }
+
+        nav.scrolled .nav-container {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.15);
+            border-color: rgba(251, 183, 201, 0.6);
         }
 
         .logo {
@@ -90,6 +100,12 @@
             color: #ec4899;
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #f78da7 0%, #fbb7c9 100%);
             color: #ffffff !important;
@@ -108,14 +124,36 @@
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 20px rgba(247, 141, 167, 0.6);
         }
+        
+        .btn-primary:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
 
         /* Tombol Link Standar */
         .nav-links a.nav-item {
             position: relative;
+            padding: 0.5rem 0;
+        }
+        .nav-links a.nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #ec4899;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        .nav-links a.nav-item:hover::after, .nav-links a.nav-item.active::after {
+            width: 100%;
         }
         .nav-links a.nav-item:hover {
             color: #ec4899;
-            transform: translateY(-2px);
         }
 
         .mobile-menu-btn {
@@ -129,7 +167,6 @@
         }
 
         .mobile-menu {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -139,12 +176,19 @@
             backdrop-filter: blur(10px);
             z-index: 1001;
             padding: 5rem 1.5rem 2rem;
+            display: flex;
             flex-direction: column;
             gap: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-20px);
+            transition: all 0.3s ease-in-out;
         }
 
         .mobile-menu.active {
-            display: flex;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
         .mobile-menu a {
@@ -172,7 +216,7 @@
 
         /* Hero Section */
         .hero {
-            margin-top: 60px; /* Jarak untuk navbar */
+            margin-top: 90px; /* Jarak yang lebih pas agar ujung atas gambar tidak tertutup */
             padding: 5rem 1.5rem;
             text-align: center;
             width: 100%;
@@ -323,20 +367,39 @@
 
         .sample-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 1rem 0.5rem; /* Padding ekstra agar efek hover (shadow) tidak terpotong */
+        }
+
+        /* Custom Scrollbar untuk Galeri */
+        .sample-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+        .sample-grid::-webkit-scrollbar-track {
+            background: #fff0f4;
+            border-radius: 10px;
+        }
+        .sample-grid::-webkit-scrollbar-thumb {
+            background: #fbb7c9;
+            border-radius: 10px;
+        }
+        .sample-grid::-webkit-scrollbar-thumb:hover {
+            background: #f78da7;
         }
 
         @media (min-width: 640px) {
-            .sample-grid { grid-template-columns: repeat(2, 1fr); }
+            .sample-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
         }
         @media (min-width: 1024px) {
-            .sample-grid { grid-template-columns: repeat(4, 1fr); }
+            .sample-grid { grid-template-columns: repeat(5, 1fr); }
         }
 
         .sample-item {
             background: #ffffff;
-            padding: 1rem;
+            padding: 0.75rem;
             border-radius: 1.25rem;
             box-shadow: 0 4px 15px rgba(236, 72, 153, 0.08);
             border: 2px solid transparent;
@@ -367,102 +430,94 @@
             transition: transform 0.5s ease;
         }
 
+        /* Skeleton Loading Effect */
+        @keyframes skeletonPulse {
+            0% { background-color: #fff0f4; }
+            50% { background-color: #fce7f3; }
+            100% { background-color: #fff0f4; }
+        }
+        .skeleton {
+            animation: skeletonPulse 1.5s ease-in-out infinite;
+        }
+
         .sample-item:hover .sample-img-wrapper img {
             transform: scale(1.05);
         }
 
         .sample-title {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #4a4a4a;
             margin-bottom: 0.25rem;
         }
 
         .sample-category {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #ec4899;
             font-weight: 600;
         }
 
-        /* How to Order Section */
-        .steps {
-            padding: 5rem 1.5rem;
+        /* Filter Kategori */
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .filter-btn {
             background: white;
-            border-top: 2px dashed #fce7f3;
-            border-bottom: 2px dashed #fce7f3;
+            border: 2px solid #fce7f3;
+            color: #64748b;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .steps-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 3rem 2rem;
-            margin-top: 4rem;
+        .filter-btn:hover {
+            border-color: #fbb7c9;
+            color: #ec4899;
         }
 
-        @media (min-width: 768px) {
-            .steps-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        @keyframes floatCard {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .step-card {
-            background: #fff0f4;
-            padding: 2.5rem 2rem;
-            border-radius: 1.5rem;
-            text-align: center;
-            position: relative;
-            transition: transform 0.3s;
-            border: 2px dashed #fbb7c9;
-            animation: floatCard 4s ease-in-out infinite;
-        }
-
-        /* Membuat animasi tiap kartu tidak bersamaan */
-        .step-card:nth-child(1) { animation-delay: 0s; }
-        .step-card:nth-child(2) { animation-delay: 1.5s; }
-        .step-card:nth-child(3) { animation-delay: 0.75s; }
-
-        .step-card:hover {
-            animation-play-state: paused;
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.15);
-            border-color: #f78da7;
-            z-index: 2;
-        }
-
-        .step-number {
-            width: 55px;
-            height: 55px;
+        .filter-btn.active {
             background: linear-gradient(135deg, #f78da7 0%, #fbb7c9 100%);
             color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 800;
-            position: absolute;
-            top: -27.5px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 8px 15px rgba(247, 141, 167, 0.4);
-            border: 4px solid white;
+            border-color: transparent;
+            box-shadow: 0 4px 10px rgba(247, 141, 167, 0.4);
         }
 
-        .step-title {
-            color: #ec4899;
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: 0.75rem;
-            margin-top: 0.5rem;
+        /* Lightbox (Zoom Gambar) */
+        .lightbox-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(5px);
+            z-index: 3000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
+        .lightbox-overlay.active { opacity: 1; visibility: visible; }
+        .lightbox-img {
+            max-width: 90%; max-height: 90vh; border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9); transition: transform 0.3s ease;
+        }
+        .lightbox-overlay.active .lightbox-img { transform: scale(1); }
+        .lightbox-close {
+            position: absolute; top: 1.5rem; right: 2rem; color: white;
+            font-size: 2rem; cursor: pointer; transition: color 0.2s;
+            background: rgba(0,0,0,0.3); width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .lightbox-close:hover { color: #f472b6; background: rgba(0,0,0,0.6); }
 
-        .step-desc {
-            color: #64748b;
-            font-size: 0.95rem;
+        /* Typing Cursor Effect */
+        .typing-cursor {
+            display: inline-block; width: 3px; background-color: #ec4899;
+            margin-left: 4px; animation: blink 1s step-end infinite;
         }
+        @keyframes blink { 50% { opacity: 0; } }
 
         /* Instagram Section */
         .instagram-section {
@@ -572,49 +627,7 @@
             font-weight: 600;
         }
 
-        /* Contact Section */
-        .contact {
-            padding: 6rem 1.5rem;
-            background: linear-gradient(135deg, #fdf2f8 0%, #fff0f4 100%);
-        }
-
-        .contact-form-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 3rem 2rem;
-            border-radius: 1.5rem;
-            box-shadow: 0 20px 60px rgba(236, 72, 153, 0.15);
-            border: 1px solid rgba(236, 72, 153, 0.2);
-        }
-
-        .contact-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .contact-header h2 {
-            margin-bottom: 0.5rem;
-        }
-
-        .contact-header p {
-            color: #64748b;
-            font-size: 0.95rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #4a4a4a;
-            font-size: 0.9rem;
-        }
-
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 0.8rem 1rem;
             border: 2px solid #fce7f3;
@@ -626,7 +639,7 @@
             color: #4a4a4a;
         }
 
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #ec4899;
             box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.15);
@@ -636,30 +649,6 @@
         textarea {
             min-height: 120px;
             resize: vertical;
-        }
-
-        .btn-whatsapp {
-            width: 100%;
-            background: #25D366;
-            color: white;
-            padding: 1rem;
-            border: none;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
-        }
-
-        .btn-whatsapp:hover {
-            background: #1ebe57;
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 32px rgba(37, 211, 102, 0.4);
         }
 
         /* Login Popup */
@@ -708,34 +697,62 @@
         .login-error { color: #ef4444; font-size: 0.8rem; display: none; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.5rem; }
         .login-popup input {
             text-align: center;
+            margin-bottom: 1rem;
+        }
+        .login-popup input:disabled {
+            background: #f1f5f9;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .password-container {
+            position: relative;
+            width: 100%;
             margin-bottom: 0;
         }
+        .password-container input {
+            margin-bottom: 0 !important;
+            padding-right: 2.5rem; /* Ruang untuk ikon mata */
+        }
+        .toggle-password {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none;
+            cursor: pointer; color: #9ca3af;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; transition: color 0.3s ease;
+        }
+        .toggle-password:hover {
+            color: #ec4899;
+        }
 
-        /* Floating WhatsApp Button */
-        .floating-wa {
+        /* Back to Top Button */
+        .back-to-top {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            background: #25D366;
+            background: #ec4899;
             color: white;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
-            z-index: 1000;
-            text-decoration: none;
-            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
         }
-        
-        .floating-wa:hover {
-            transform: scale(1.1) translateY(-5px);
-            background: #1ebe57;
-            box-shadow: 0 15px 35px rgba(37, 211, 102, 0.5);
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        .back-to-top:hover {
+            background: #db2777; transform: translateY(-5px); box-shadow: 0 8px 20px rgba(236, 72, 153, 0.6);
         }
+
 
         /* Footer */
         footer {
@@ -777,6 +794,12 @@
             .mobile-menu-btn { display: block; }
             .sample-title { text-align: center; }
             .sample-category { text-align: center; }
+            .nav-right { gap: 0.5rem; }
+            .nav-order-btn {
+                padding: 0.4rem 1rem !important;
+                font-size: 0.8rem !important;
+            }
+            .logo { font-size: 1rem; }
         }
     </style>
 </head>
@@ -790,11 +813,13 @@
             </a>
             <div class="nav-links">
                 <a href="#sample" class="nav-item">Sample</a>
-                <a href="#steps" class="nav-item">How to Order</a>
+                <a href="tos.html" class="nav-item">T.O.S</a>
                 <a href="#instagram" class="nav-item">Instagram</a>
-                <a href="#contact" class="btn-primary">Order Now</a>
             </div>
-            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <div class="nav-right">
+                <a href="tos.html#contact" class="btn-primary nav-order-btn">Order Now</a>
+                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            </div>
         </div>
     </nav>
 
@@ -802,18 +827,17 @@
     <div class="mobile-menu" id="mobileMenu">
         <button class="mobile-menu-close" onclick="toggleMenu()">✕</button>
         <a href="#sample" onclick="toggleMenu()">Sample</a>
-        <a href="#steps" onclick="toggleMenu()">How to Order</a>
+        <a href="tos.html" onclick="toggleMenu()">T.O.S</a>
         <a href="#instagram" onclick="toggleMenu()">Instagram</a>
-        <a href="#contact" class="btn-primary" onclick="toggleMenu()">Order Now</a>
     </div>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
             <div class="badge">Now Accepting Commissions</div>
-            <h1>Order Your <span>Custom Drawing</span></h1>
+            <h1>Order Your <span><span id="typed-text"></span><span class="typing-cursor">&nbsp;</span></span></h1>
             <p class="subtitle">Bespoke digital illustrations tailored to your vision. High-end, custom artwork for your unique projects.</p>
-            <a href="#contact" class="btn-large">
+            <a href="tos.html#contact" class="btn-large">
                 Order Now →
             </a>
         </div>
@@ -834,36 +858,11 @@
                 </a>
             </div>
             
+            <!-- Category Filter -->
+            <div class="filter-container" id="categoryFilter"></div>
+
             <div class="sample-grid" id="sampleGrid">
                 <!-- Sample items will be inserted here -->
-            </div>
-        </div>
-    </section>
-
-    <!-- How to Order Section -->
-    <section class="steps" id="steps">
-        <div class="container">
-            <div class="section-header" style="margin-bottom: 1.5rem;">
-                <h2>Proses Pemesanan</h2>
-                <p class="section-subtitle">Langkah mudah untuk mendapatkan karya impianmu</p>
-            </div>
-            
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h3 class="step-title">Kirim Detail</h3>
-                    <p class="step-desc">Isi form dengan deskripsi karakter, pose, dan referensi yang kamu mau.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h3 class="step-title">Sketsa & Revisi</h3>
-                    <p class="step-desc">Aku akan buatkan sketsa kasar. Kamu bebas minta revisi sebelum masuk tahap pewarnaan!</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h3 class="step-title">Finishing</h3>
-                    <p class="step-desc">Setelah deal, gambar akan diselesaikan dan dikirim dengan kualitas resolusi tinggi (HD).</p>
-                </div>
             </div>
         </div>
     </section>
@@ -906,50 +905,40 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section class="contact" id="contact">
-        <div class="contact-form-container">
-            <div class="contact-header">
-                <h2>Start an Inquiry</h2>
-                <p>Tell us about your vision and let's bring it to life.</p>
-            </div>
-            <form id="orderForm">
-                <div class="form-group">
-                    <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" placeholder="Damian" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="details">Project Details</label>
-                    <textarea id="details" name="details" placeholder="Describe your character, concept, pose, colors..." required></textarea>
-                </div>
-                
-                <button type="submit" class="btn-whatsapp">
-                    Send to WhatsApp
-                </button>
-            </form>
-        </div>
-    </section>
-
     <!-- Admin Login Popup -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-popup">
             <button class="login-close" onclick="closeLoginPopup()">✕</button>
             <h3>Admin Login</h3>
-            <p>Masukkan kata sandi untuk mengakses Dashboard Admin.</p>
+            <p>Masukkan username dan kata sandi untuk mengakses Dashboard Admin.</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <input type="password" id="adminPassword" placeholder="••••••••" required>
-                <div id="loginError" class="login-error">Password salah! Coba lagi.</div>
+                <input type="text" id="adminUsername" placeholder="Username atau Email" required>
+                <div class="password-container">
+                    <input type="password" id="adminPassword" placeholder="••••••••" required>
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()" title="Tampilkan Sandi">
+                        <svg id="eyeIcon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="loginError" class="login-error">Username atau Password salah!</div>
                 <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1.25rem; padding: 0.85rem;">Login ke Dashboard</button>
             </form>
         </div>
     </div>
 
-    <!-- Floating WhatsApp Button (Links to Contact Section) -->
-    <a href="#contact" class="floating-wa" title="Order via WhatsApp">
-        <!-- Menggunakan SVG Icon WhatsApp yang elegan -->
-        <svg viewBox="0 0 24 24" width="35" height="35" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.405-.883-.733-1.48-1.638-1.653-1.935-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-    </a>
+    <!-- Lightbox for Images -->
+    <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+        <img src="" id="lightboxImg" class="lightbox-img" onclick="event.stopPropagation()">
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" onclick="scrollToTop()" title="Kembali ke Atas">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
 
     <!-- Footer -->
     <footer>
@@ -977,7 +966,9 @@
             
             sampleTitles: {},
             
-            sampleCategories: {}
+            sampleCategories: {},
+            
+            topArtworks: {}
             // Catatan: uploadPreset, apiKey, dan apiSecret sengaja DIHAPUS dari sini 
             // demi keamanan. Pengaturan rahasia tersebut HANYA ada di admin.html.
         };
@@ -993,6 +984,13 @@
         // 🎨 RENDER FUNCTIONS
         // ============================================
 
+        let allGalleryItems = [];
+        let filteredItems = [];
+        let displayedItemsCount = 0;
+        const ITEMS_PER_LOAD = 10; // Jumlah gambar per scroll
+        let currentFilter = 'Semua';
+        let galleryObserver = null;
+
         // Fetch Gambar Otomatis dari Cloudinary
         async function renderSample() {
             const grid = document.getElementById('sampleGrid');
@@ -1004,27 +1002,114 @@
                 if (!response.ok) throw new Error('List tidak ditemukan');
                 const data = await response.json();
                 
-                grid.innerHTML = data.resources.map(res => {
-                    const imageUrl = `https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/upload/f_auto,q_auto/${res.public_id}.${res.format}`;
-                    
-                    const defaultTitle = res.public_id.split('/').pop().replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-                    const titleName = (CONFIG.sampleTitles && CONFIG.sampleTitles[res.public_id]) ? CONFIG.sampleTitles[res.public_id] : defaultTitle;
-                    const categoryName = (CONFIG.sampleCategories && CONFIG.sampleCategories[res.public_id]) ? CONFIG.sampleCategories[res.public_id] : 'Digital Art';
-                    
-                    return `
-                        <div class="sample-item">
-                            <div class="sample-img-wrapper">
-                                <img src="${imageUrl}" alt="Artwork">
-                            </div>
-                            <div class="sample-title">${titleName}</div>
-                            <div class="sample-category">${categoryName}</div>
-                        </div>
-                    `;
-                }).join('');
+                allGalleryItems = data.resources;
+
+                // Buat tombol filter kategori otomatis dari data gambar
+                const categories = data.resources.map(res => (CONFIG.sampleCategories && CONFIG.sampleCategories[res.public_id]) ? CONFIG.sampleCategories[res.public_id] : 'Digital Art');
+                const uniqueCategories = ['Semua', ...new Set(categories)];
+                
+                const filterContainer = document.getElementById('categoryFilter');
+                if (filterContainer) {
+                    filterContainer.innerHTML = uniqueCategories.map((cat, index) => 
+                        `<button class="filter-btn ${index === 0 ? 'active' : ''}" onclick="filterGallery(this, '${cat}')">${cat}</button>`
+                    ).join('');
+                }
+
+                // Terapkan filter pertama ("Semua")
+                applyFilter('Semua');
+                
+                // Perbaiki posisi scroll jika ada hash di URL (#instagram atau #sample) setelah galeri memakan tempat di layar
+                if (window.location.hash) {
+                    setTimeout(() => {
+                        const target = document.querySelector(window.location.hash);
+                        if (target) target.scrollIntoView({ behavior: 'smooth' });
+                    }, 250);
+                }
             } catch (error) {
                 console.log("Gallery fetch error:", error);
                 grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">Belum ada gambar, atau pengaturan "Resource list" belum diizinkan di Cloudinary.</p>';
             }
+        }
+
+        // Filter Gallery Function
+        function filterGallery(btnElement, category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            applyFilter(category);
+        }
+
+        function applyFilter(category) {
+            currentFilter = category;
+            
+            if (category === 'Semua') {
+                filteredItems = allGalleryItems;
+            } else {
+                filteredItems = allGalleryItems.filter(res => {
+                    const categoryName = (CONFIG.sampleCategories && CONFIG.sampleCategories[res.public_id]) ? CONFIG.sampleCategories[res.public_id] : 'Digital Art';
+                    return categoryName === category;
+                });
+            }
+            
+            const grid = document.getElementById('sampleGrid');
+            grid.innerHTML = '';
+            displayedItemsCount = 0;
+            
+            loadMoreItems();
+        }
+
+        // Infinite Scroll Logic
+        function loadMoreItems() {
+            const grid = document.getElementById('sampleGrid');
+            const nextItems = filteredItems.slice(displayedItemsCount, displayedItemsCount + ITEMS_PER_LOAD);
+            
+            if (nextItems.length === 0) {
+                if (displayedItemsCount === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">Tidak ada gambar di kategori ini.</p>';
+                }
+                return;
+            }
+            
+            const html = nextItems.map(res => {
+                const imageUrl = `https://res.cloudinary.com/${CONFIG.cloudinaryName}/image/upload/f_auto,q_auto/${res.public_id}.${res.format}`;
+                const defaultTitle = res.public_id.split('/').pop().replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                const titleName = (CONFIG.sampleTitles && CONFIG.sampleTitles[res.public_id]) ? CONFIG.sampleTitles[res.public_id] : defaultTitle;
+                const categoryName = (CONFIG.sampleCategories && CONFIG.sampleCategories[res.public_id]) ? CONFIG.sampleCategories[res.public_id] : 'Digital Art';
+                
+                return `
+                    <div class="sample-item">
+                        <div class="sample-img-wrapper skeleton" style="cursor: pointer;" onclick="openLightbox('${imageUrl}')">
+                            <img src="${imageUrl}" alt="Artwork" onload="this.parentElement.classList.remove('skeleton'); this.style.opacity = 1;" style="opacity: 0; transition: opacity 0.5s ease;">
+                        </div>
+                        <div class="sample-title">${titleName}</div>
+                        <div class="sample-category">${categoryName}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            grid.insertAdjacentHTML('beforeend', html);
+            displayedItemsCount += nextItems.length;
+            
+            if (displayedItemsCount < filteredItems.length) {
+                setupObserver();
+            }
+        }
+
+        function setupObserver() {
+            const grid = document.getElementById('sampleGrid');
+            const lastItem = grid.lastElementChild;
+            if (!lastItem) return;
+            
+            if (galleryObserver) galleryObserver.disconnect();
+            
+            galleryObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    galleryObserver.disconnect();
+                    loadMoreItems(); // Load next batch
+                }
+            }, { rootMargin: '100px' });
+            
+            galleryObserver.observe(lastItem);
         }
 
         // Update Instagram Link
@@ -1043,42 +1128,99 @@
             }
         }
 
-        // Send to WhatsApp
-        function sendToWhatsApp(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const details = document.getElementById('details').value;
-            
-            const message = `Halo Emma! Saya ingin order commission.%0A%0A*Name:* ${name}%0A*Details:* ${details}%0A%0ATerima kasih!`;
-            
-            const whatsappURL = `https://wa.me/${CONFIG.whatsappNumber}?text=${message}`;
-            window.open(whatsappURL, '_blank');
+        // Login Security State
+        const MAX_FAILED_ATTEMPTS = 3;
+        const BLOCK_DURATION_MS = 3 * 60 * 1000; // 3 menit
+
+        function checkLoginBlock() {
+            const blockUntil = localStorage.getItem('loginBlockedUntil');
+            if (blockUntil && Date.now() < parseInt(blockUntil)) {
+                const remainingSecs = Math.ceil((parseInt(blockUntil) - Date.now()) / 1000);
+                const remainingMins = Math.ceil(remainingSecs / 60);
+                const errorDiv = document.getElementById('loginError');
+                errorDiv.textContent = `Terlalu banyak percobaan salah. Coba lagi dalam ${remainingMins} menit.`;
+                errorDiv.style.display = 'block';
+                document.getElementById('adminUsername').disabled = true;
+                document.getElementById('adminPassword').disabled = true;
+                document.querySelector('#loginForm button[type="submit"]').disabled = true;
+                return true;
+            } else if (blockUntil) {
+                localStorage.removeItem('loginBlockedUntil');
+                localStorage.removeItem('loginFailedAttempts');
+            }
+            return false;
         }
 
         // Admin Login Popup Handlers
         function adminLogin(e) {
             e.preventDefault();
             document.getElementById('loginOverlay').classList.add('active');
+            
+            document.getElementById('adminUsername').value = '';
             document.getElementById('adminPassword').value = '';
+            
+            // Reset ikon dan tipe input sandi kembali ke tertutup saat form dibuka
+            const passwordInput = document.getElementById('adminPassword');
+            passwordInput.type = 'password';
+            document.getElementById('eyeIcon').innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+            
             document.getElementById('loginError').style.display = 'none';
-            setTimeout(() => document.getElementById('adminPassword').focus(), 100);
+            document.getElementById('adminUsername').disabled = false;
+            document.getElementById('adminPassword').disabled = false;
+            document.querySelector('#loginForm button[type="submit"]').disabled = false;
+
+            if (!checkLoginBlock()) {
+                setTimeout(() => document.getElementById('adminUsername').focus(), 100);
+            }
         }
 
         function closeLoginPopup() {
             document.getElementById('loginOverlay').classList.remove('active');
         }
 
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('adminPassword');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                // Ganti menjadi ikon mata disilang (eye-off)
+                eyeIcon.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>';
+            } else {
+                passwordInput.type = 'password';
+                // Ganti kembali menjadi ikon mata terbuka (eye)
+                eyeIcon.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+            }
+        }
+
         function handleLogin(e) {
             e.preventDefault();
+            if (checkLoginBlock()) return;
+
+            const username = document.getElementById('adminUsername').value.trim().toLowerCase();
             const password = document.getElementById('adminPassword').value;
             
-            // GANTI PASSWORD ANDA DI SINI (Di dalam tanda kutip)
-            if (password === "emma123") {
+            // Username disamarkan Base64 ("ZW1tYV9hZG1pbg==" adalah "emma_admin")
+            // Password disamarkan menggunakan Base64 ("RW1tYUFydFdvcmtzITk5" adalah "EmmaArtWorks!99")
+            // Jika ingin ganti username/sandi, cari "base64 encoder" di Google, ubah kata Anda, lalu ganti teks di bawah
+            if (btoa(username) === "ZW1tYV9hZG1pbg==" && btoa(password) === "RW1tYUFydFdvcmtzITk5") {
                 localStorage.setItem('isAdmin', 'true');
+                localStorage.removeItem('loginFailedAttempts');
+                localStorage.removeItem('loginBlockedUntil');
                 window.location.href = "admin.html";
             } else {
-                document.getElementById('loginError').style.display = 'block';
+                let attempts = parseInt(localStorage.getItem('loginFailedAttempts') || '0');
+                attempts++;
+                localStorage.setItem('loginFailedAttempts', attempts);
+                
+                if (attempts >= MAX_FAILED_ATTEMPTS) {
+                    localStorage.setItem('loginBlockedUntil', Date.now() + BLOCK_DURATION_MS);
+                    checkLoginBlock(); // Panggil ini untuk menerapkan disable pada input & button
+                } else {
+                    const errorDiv = document.getElementById('loginError');
+                    errorDiv.textContent = `Username atau Password salah! (Sisa percobaan: ${MAX_FAILED_ATTEMPTS - attempts})`;
+                    errorDiv.style.display = 'block';
+                }
             }
         }
 
@@ -1103,6 +1245,72 @@
             } else {
                 navbar.classList.remove('scrolled');
             }
+            
+            // Tampilkan tombol Back to Top jika scroll > 400px
+            const backToTopBtn = document.getElementById('backToTop');
+            if (backToTopBtn) {
+                if (window.scrollY > 400) {
+                    backToTopBtn.classList.add('show');
+                } else {
+                    backToTopBtn.classList.remove('show');
+                }
+            }
+        });
+
+        // Fungsi Kembali ke Atas
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================
+        // ✨ UI/UX EFFECTS
+        // ============================================
+
+        // Lightbox Functions
+        function openLightbox(imgUrl) {
+            const overlay = document.getElementById('lightboxOverlay');
+            const img = document.getElementById('lightboxImg');
+            img.src = imgUrl;
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Matikan scroll background
+        }
+
+        function closeLightbox() {
+            const overlay = document.getElementById('lightboxOverlay');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => document.getElementById('lightboxImg').src = '', 300); // Hapus source setelah animasi tutup selesai
+        }
+
+        // Typing Effect Logic
+        const wordsToType = ["Custom Drawing", "Chibi Art", "Fanarts", "Character Design"];
+        let wordIndex = 0; let charIndex = 0; let isDeleting = false;
+
+        function typeEffect() {
+            const typedTextSpan = document.getElementById("typed-text");
+            if(!typedTextSpan) return;
+            
+            const currentWord = wordsToType[wordIndex];
+            if (isDeleting) {
+                typedTextSpan.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typedTextSpan.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            let typingSpeed = isDeleting ? 50 : 100;
+            if (!isDeleting && charIndex === currentWord.length) { typingSpeed = 2000; isDeleting = true; } 
+            else if (isDeleting && charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % wordsToType.length; typingSpeed = 500; }
+            setTimeout(typeEffect, typingSpeed);
+        }
+
+
+        // Anti Right-Click khusus Gambar
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.tagName === 'IMG' || e.target.classList.contains('sample-img-wrapper')) {
+                e.preventDefault();
+                // Opsional: alert("Maaf, gambar tidak dapat diunduh langsung.");
+            }
         });
 
         // ============================================
@@ -1110,34 +1318,38 @@
         // ============================================
         
         document.addEventListener('DOMContentLoaded', () => {
-            // Tampilkan Banner Peringatan jika sedang dalam mode Admin
+            // Tampilkan Menu Admin Melayang jika sedang dalam mode Admin
             if (isAdmin) {
-                const banner = document.createElement('div');
-                banner.style.background = '#1e293b';
-                banner.style.color = 'white';
-                banner.style.padding = '0.5rem';
-                banner.style.textAlign = 'center';
-                banner.style.fontSize = '0.8rem';
-                banner.style.fontWeight = 'bold';
-                banner.style.position = 'fixed';
-                banner.style.top = '0';
-                banner.style.width = '100%';
-                banner.style.zIndex = '9999';
-                banner.innerHTML = `Mode Admin Aktif (Melihat Preview Lokal). 
-                    <a href="admin.html" style="background: #ec4899; color: white; padding: 3px 10px; border-radius: 4px; text-decoration: none; margin: 0 10px; display: inline-block;">Kembali ke Dashboard</a>
-                    <a href="#" onclick="logoutAdmin()" style="color:#cbd5e1; text-decoration:underline;">Logout</a>`;
-                document.body.appendChild(banner);
-                document.getElementById('navbar').style.top = '40px'; // Geser navbar ke bawah
+                const adminPanel = document.createElement('div');
+                adminPanel.style.position = 'fixed';
+                adminPanel.style.bottom = '2rem';
+                adminPanel.style.left = '2rem';
+                adminPanel.style.background = '#1e293b';
+                adminPanel.style.color = 'white';
+                adminPanel.style.padding = '1rem 1.5rem';
+                adminPanel.style.borderRadius = '1rem';
+                adminPanel.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+                adminPanel.style.zIndex = '9999';
+                adminPanel.style.display = 'flex';
+                adminPanel.style.flexDirection = 'column';
+                adminPanel.style.gap = '0.75rem';
+                adminPanel.innerHTML = `
+                    <div style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Admin Mode</div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <a href="admin.html" style="background: #ec4899; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='#db2777'" onmouseout="this.style.background='#ec4899'">Dashboard</a>
+                        <a href="#" onclick="logoutAdmin()" style="background: #334155; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">Logout</a>
+                    </div>`;
+                document.body.appendChild(adminPanel);
             }
 
             renderSample();
             updateInstagramLink();
             updateDriveLink();
+            typeEffect();
             
             // Set current year on footer
             document.getElementById('currentYear').textContent = new Date().getFullYear();
             
-            document.getElementById('orderForm').addEventListener('submit', sendToWhatsApp);
             
             // Listener agar halaman web langsung berubah (Live Update) tanpa di-refresh
             // saat ada perubahan dari Dashboard Admin

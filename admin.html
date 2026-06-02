@@ -87,15 +87,16 @@
             margin-bottom: 0.5rem;
             color: #475569;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #cbd5e1;
             border-radius: 0.5rem;
             font-family: inherit;
             box-sizing: border-box;
+            background: white;
         }
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #ec4899;
             box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
@@ -135,7 +136,9 @@
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-top: 1.5rem;
+            padding: 1rem 0.5rem; /* Ruang agar shadow saat dihover tidak terpotong */
         }
+
         .settings-buttons {
             display: flex;
             gap: 1rem;
@@ -194,12 +197,49 @@
             color: white;
             padding: 1rem 2rem;
             border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
             transform: translateY(150%);
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 9999;
+            font-weight: 600;
         }
         .notification.show {
             transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Custom Modal / Popup */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: white; padding: 2rem; border-radius: 1.5rem;
+            width: 90%; max-width: 400px; transform: translateY(20px);
+            transition: transform 0.3s ease; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 2px dashed #fbb7c9;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-title { margin: 0 0 0.5rem 0; color: #1e293b; font-size: 1.25rem; font-weight: 800; }
+        .modal-desc { color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
+        .btn-cancel { 
+            background: #f1f5f9; color: #475569; width: auto; 
+            padding: 0.6rem 1.2rem; border-radius: 0.5rem; border: none; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-cancel:hover { background: #e2e8f0; }
+        .btn-confirm { 
+            background: #ec4899; color: white; width: auto; 
+            padding: 0.6rem 1.2rem; border-radius: 0.5rem; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3);
+        }
+        .btn-confirm:hover {
+            background: #db2777; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(236, 72, 153, 0.4);
         }
 
 
@@ -220,37 +260,40 @@
                 border-radius: 0.5rem;
             }
             .gallery-grid {
-                grid-template-columns: 1fr;
-            gap: 0.75rem;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
             }
             .sample-actions {
-            top: 0.3rem;
-            right: 0.3rem;
+                top: 0.25rem;
+                right: 0.25rem;
+                flex-direction: column;
+                gap: 0.25rem;
             }
             .sample-preview-container {
-            height: 65px;
+                height: 120px; /* Sesuaikan tinggi untuk 2 kolom di HP */
             }
             .sample-details {
-            padding: 0.6rem;
-            gap: 0.35rem;
+                padding: 0.75rem;
+                gap: 0.5rem;
             }
             .sample-details label {
-            font-size: 0.6rem;
-            margin-bottom: 0.1rem;
+                font-size: 0.6rem;
+                margin-bottom: 0.15rem;
             }
             .sample-details input {
-            padding: 0.35rem 0.5rem;
-            font-size: 0.75rem;
+                padding: 0.4rem 0.5rem;
+                font-size: 0.75rem;
             }
             .btn {
                 width: 100%;
                 text-align: center;
-            padding: 0.4rem 0.5rem !important;
-            font-size: 0.75rem;
+                padding: 0.5rem !important;
+                font-size: 0.75rem;
             }
             .sample-actions .btn {
                 width: auto;
-            padding: 0.25rem 0.4rem !important;
+                padding: 0.3rem 0.4rem !important;
+                font-size: 0.65rem;
             }
             .upload-action-group {
                 flex-direction: row;
@@ -264,6 +307,13 @@
                 flex-direction: column;
                 gap: 0.75rem;
             }
+            .notification {
+                bottom: 1.5rem;
+                left: 1.5rem;
+                right: 1.5rem;
+                text-align: center;
+                padding: 1rem;
+            }
         }
     </style>
 </head>
@@ -271,7 +321,7 @@
 
     <nav class="navbar">
         <h1>Admin Dashboard</h1>
-        <a href="index.html" target="_blank">Lihat Website →</a>
+        <a href="index.html">Lihat Website →</a>
     </nav>
 
     <div class="container">
@@ -316,6 +366,26 @@
             </div>
         </div>
 
+        <!-- Pengaturan Hall of Fame (Peringkat) -->
+        <div class="card">
+            <div class="card-header">Pengaturan Hall of Fame (Peringkat)</div>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: -1rem; margin-bottom: 1.5rem;">Pilih 3 karya terbaik untuk ditampilkan di halaman T.O.S. (Kosongkan untuk memilih otomatis 3 karya terbaru).</p>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>🥇 Peringkat 1 (Emas)</label>
+                    <select id="rank1Select"></select>
+                </div>
+                <div class="form-group">
+                    <label>🥈 Peringkat 2 (Perak)</label>
+                    <select id="rank2Select"></select>
+                </div>
+                <div class="form-group">
+                    <label>🥉 Peringkat 3 (Perunggu)</label>
+                    <select id="rank3Select"></select>
+                </div>
+            </div>
+            <button class="btn" onclick="saveSettings()" style="margin-top: 1rem; width: auto;">Simpan Peringkat</button>
+        </div>
 
         <!-- Pengaturan Galeri -->
         <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
@@ -337,7 +407,29 @@
 
     <div class="notification" id="notif">Perubahan berhasil disimpan!</div>
 
+    <!-- Custom Rename Modal -->
+    <div class="modal-overlay" id="renameModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Ganti Nama File</h3>
+            <p class="modal-desc">Masukkan nama file baru tanpa spasi atau simbol. Nama ini akan diubah secara permanen di server Cloudinary.</p>
+            <div class="form-group" style="margin-bottom: 0;">
+                <input type="text" id="renameInput" placeholder="Ketik nama file baru..." onkeypress="handleRenameKeypress(event)">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeRenameModal(false)">Batal</button>
+                <button class="btn-confirm" onclick="closeRenameModal(true)">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Cek apakah pengunjung sudah login melalui popup di index.html
+        // Jika tidak ada tanda 'isAdmin', tendang kembali ke halaman utama
+        if (localStorage.getItem('isAdmin') !== 'true') {
+            alert("Akses Ditolak! Silakan login melalui halaman utama.");
+            window.location.replace("index.html");
+        }
+
         // Default Config jika kosong
         const DEFAULT_CONFIG = {
             whatsappNumber: '6281235071498',
@@ -348,7 +440,8 @@
             cloudinaryApiKey: '',
             cloudinaryApiSecret: '',
             sampleTitles: {},
-            sampleCategories: {}
+            sampleCategories: {},
+            topArtworks: {}
         };
 
         let currentConfig = {};
@@ -383,6 +476,22 @@
                 const response = await fetch(`https://res.cloudinary.com/${cloudName}/image/list/v${Date.now()}/emmasion_gallery.json`);
                 if (!response.ok) throw new Error('List tidak ditemukan');
                 const data = await response.json();
+                
+                // Siapkan opsi untuk Dropdown Peringkat
+                const optionsHTML = '<option value="">-- Pilih otomatis terbaru --</option>' + data.resources.map(res => {
+                    const defaultTitle = res.public_id.split('/').pop().replace(/[_-]/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                    const title = (currentConfig.sampleTitles && currentConfig.sampleTitles[res.public_id]) ? currentConfig.sampleTitles[res.public_id] : defaultTitle;
+                    return `<option value="${res.public_id}">${title}</option>`;
+                }).join('');
+                
+                // Masukkan opsi ke masing-masing select
+                ['rank1', 'rank2', 'rank3'].forEach(rank => {
+                    const select = document.getElementById(rank + 'Select');
+                    if (select) {
+                        select.innerHTML = optionsHTML;
+                        select.value = (currentConfig.topArtworks && currentConfig.topArtworks[rank]) ? currentConfig.topArtworks[rank] : '';
+                    }
+                });
                 
                 container.innerHTML = data.resources.map(res => {
                     const imgSrc = `https://res.cloudinary.com/${cloudName}/image/upload/w_400,h_300,c_fill,f_auto/${res.public_id}.${res.format}`;
@@ -448,6 +557,30 @@
                 }
             });
         }
+        
+        // Custom Prompt Logic
+        let renameResolve = null;
+        function customPrompt(oldName) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('renameModal');
+                const input = document.getElementById('renameInput');
+                input.value = oldName;
+                modal.classList.add('active');
+                setTimeout(() => input.focus(), 100);
+                renameResolve = resolve;
+            });
+        }
+        function closeRenameModal(isConfirmed) {
+            document.getElementById('renameModal').classList.remove('active');
+            if (renameResolve) {
+                renameResolve(isConfirmed ? document.getElementById('renameInput').value : null);
+                renameResolve = null;
+            }
+        }
+        function handleRenameKeypress(e) { 
+            // Submit otomatis jika pengguna menekan tombol Enter
+            if (e.key === 'Enter') closeRenameModal(true); 
+        }
 
         // Fitur Rename File Langsung di Cloudinary
         async function renameImageInCloudinary(publicId, btnNode) {
@@ -461,7 +594,7 @@
             }
 
             const oldNameOnly = publicId.split('/').pop();
-            const rawNewName = prompt("Masukkan nama file baru untuk Cloudinary (tanpa spasi/simbol):", oldNameOnly);
+            const rawNewName = await customPrompt(oldNameOnly);
             
             if (!rawNewName || rawNewName === oldNameOnly) return;
             
@@ -499,6 +632,12 @@
                     if (currentConfig.sampleCategories && currentConfig.sampleCategories[publicId]) {
                         currentConfig.sampleCategories[newPublicId] = currentConfig.sampleCategories[publicId];
                         delete currentConfig.sampleCategories[publicId];
+                    }
+                    // Update ID jika gambar ini dipakai di Hall of Fame
+                    if (currentConfig.topArtworks) {
+                        if (currentConfig.topArtworks.rank1 === publicId) currentConfig.topArtworks.rank1 = newPublicId;
+                        if (currentConfig.topArtworks.rank2 === publicId) currentConfig.topArtworks.rank2 = newPublicId;
+                        if (currentConfig.topArtworks.rank3 === publicId) currentConfig.topArtworks.rank3 = newPublicId;
                     }
 
                     // Simpan ulang semua konfigurasi dan muat ulang halaman
@@ -622,6 +761,12 @@
             currentConfig.uploadPreset = document.getElementById('uploadPreset').value;
             currentConfig.cloudinaryApiKey = document.getElementById('cloudinaryApiKey').value;
             currentConfig.cloudinaryApiSecret = document.getElementById('cloudinaryApiSecret').value;
+
+            // Simpan Peringkat Hall of Fame
+            if (!currentConfig.topArtworks) currentConfig.topArtworks = {};
+            currentConfig.topArtworks.rank1 = document.getElementById('rank1Select').value;
+            currentConfig.topArtworks.rank2 = document.getElementById('rank2Select').value;
+            currentConfig.topArtworks.rank3 = document.getElementById('rank3Select').value;
 
             // Pastikan semua ketikan judul gambar tertangkap dan tersimpan
             if (!currentConfig.sampleTitles) currentConfig.sampleTitles = {};
